@@ -50,8 +50,8 @@ static int cmd_si(char *args){
 			printf("Too much argument %s\n", arg);	
 			return 0;
 		}
-		cpu_exec(n);
 	}
+	cpu_exec(n);
 	return 0;
 }
 
