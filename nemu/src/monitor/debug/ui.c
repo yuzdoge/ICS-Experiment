@@ -37,6 +37,24 @@ static int cmd_q(char *args) {
   return -1;
 }
 
+static int cmd_si(char *args){
+	char *arg = strtok(NULL, " ");
+	unsigned long long n = 1;
+	/*Only accept numeric argument, constant expression is not be allowed*/
+	if (arg != NULL){
+		if (sscanf(arg, "%llu", &n) != 1){
+			printf("Argument %s is not numeric\n", arg);		
+			return 0;
+		}
+		if ((arg = strtok(NULL, " ")) != NULL){
+			printf("Too much argument %s\n", arg);	
+			return 0;
+		}
+		cpu_exec(n);
+	}
+	return 0;
+}
+
 static int cmd_help(char *args);
 
 static struct {
@@ -47,7 +65,7 @@ static struct {
   { "help", "Display informations about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
-
+  { "si", "Step program until N instructions\n\t\tUsage: si [N]", cmd_si },
   /* TODO: Add more commands */
 
 };
