@@ -111,8 +111,11 @@ static int cmd_x(char *args){
 		/*whether it need to check addr by myself?*/
 	    if (my_in_pmem(addr)){
 			end_addr = END_ADDR(addr, n);
+			/*
 			for (; addr < end_addr; addr += Len)
 				printf(FMT_WORD":  "FMT_WORD"\n", addr, vaddr_read(addr, Len));
+			*/
+			printf("n=%d, addr=%#x, end_addr=%#x", n, addr, end_addr);
 		}
 		else
 			printf("Cannot access address "FMT_WORD"\n", addr);	
