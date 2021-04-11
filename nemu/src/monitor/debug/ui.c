@@ -48,7 +48,8 @@ static int cmd_si(char *args){
 			return 0;
 		}
 		if ((arg = strtok(NULL, " ")) != NULL){
-			printf("Too much argument %s\n", args);	
+			*(arg + strlen(arg)) = ' ';
+			printf("Too much argument %s\n", arg);	
 			return 0;
 		}
 	}
