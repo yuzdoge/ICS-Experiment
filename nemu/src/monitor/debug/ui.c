@@ -39,10 +39,10 @@ static int cmd_q(char *args) {
 
 
 static int cmd_si(char *args){
-	char *arg = strtok(NULL, " ");
+	char *arg; 
 	unsigned long long n = 1;
 	/*Only accept numeric argument, constant expression is not be allowed*/
-	if (arg != NULL){
+	if (args && (arg = strtok(args, " "))){
 		if (sscanf(arg, "%llu", &n) != 1){
 			printf("Argument %s is not numeric\n", arg);		
 			return 0;
