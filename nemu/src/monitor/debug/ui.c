@@ -37,6 +37,7 @@ static int cmd_q(char *args) {
   return -1;
 }
 
+
 static int cmd_si(char *args){
 	char *arg = strtok(NULL, " ");
 	unsigned long long n = 1;
@@ -55,6 +56,36 @@ static int cmd_si(char *args){
 	return 0;
 }
 
+
+static int cmd_info(char *args);
+
+static struct {
+  char *name;
+  void (*handler)();
+} info_opt[] = {
+  {"r", isa_reg_display},
+};
+
+#define NR_INFO (sizeof(info_opt) / sizeof(info_opt[0])) 
+
+static int cmd_info(char *args){
+	char *arg = strtok(NULL, " ");
+	int i;
+	if (arg == NULL)
+		printf("Try `help info` for more information\n");
+	else{
+		for (i = 0; i < NR_INFO; i++){
+			if (strcmp(arg, info_opt[i].name) == 0){
+				info_opt[i].handler();
+				return 0;
+			}
+		}
+		printf("Unknown cammand `%s\n`", arg);
+	}	
+	return 0;
+}
+
+
 static int cmd_help(char *args);
 
 static struct {
@@ -66,6 +97,10 @@ static struct {
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
   { "si", "Step program until N instructions\n\tUsage: si [N]", cmd_si },
+  { "info", "Show things about the program being debugged\n"
+		    "\tUsage: info [r|w]\n"
+			"\t\tr\tlist of all registers and their content\n"
+			"\t\tw\tinformation of status of watchpoints\n", cmd_info },
   /* TODO: Add more commands */
 
 };
