@@ -80,7 +80,7 @@ static int cmd_info(char *args){
 				return 0;
 			}
 		}
-		printf("Unknown cammand `%s\n`", arg);
+		printf("Unknown cammand `%s`\n", arg);
 	}	
 	return 0;
 }
