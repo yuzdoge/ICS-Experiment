@@ -48,7 +48,7 @@ static int cmd_si(char *args){
 			return 0;
 		}
 		if ((arg = strtok(NULL, " ")) != NULL){
-			printf("Too much argument %s\n", arg);	
+			printf("Too much argument %s\n", args);	
 			return 0;
 		}
 	}
