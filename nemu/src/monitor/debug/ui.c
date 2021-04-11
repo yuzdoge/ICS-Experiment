@@ -94,8 +94,9 @@ ret:
 
 #define Len 4
 #define END_ADDR(start_addr, n) \
-	((start_addr + Len * n) > PMEM_SIZE ) ? \
+	((start_addr + Len * n) >= PMEM_BASE + PMEM_SIZE ) ? \
    	(start_addr + (PMEM_SIZE - start_addr) / Len) : (start_addr + Len * n)
+
 static inline bool my_in_pmem(paddr_t addr) { return (addr >= PMEM_BASE) && (addr < PMEM_BASE + PMEM_SIZE); }
 
 static int cmd_x(char *args){
