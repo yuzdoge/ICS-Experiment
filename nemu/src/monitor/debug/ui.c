@@ -49,7 +49,7 @@ static int cmd_si(char *args){
 		}
 		if ((arg = strtok(NULL, " ")) != NULL){
 			*(arg + strlen(arg)) = ' ';
-			printf("Too much argument %s\n", arg);	
+			printf("Too much argument `%s`\n", arg);	
 			return 0;
 		}
 	}
@@ -82,7 +82,7 @@ static int cmd_info(char *args){
 				goto ret;
 			}
 		}
-		printf("Unknown cammand `%s`\n", arg);
+		printf("Unknown option `%s`\n", arg);
 	}	
 ret:
 	free(arg);
