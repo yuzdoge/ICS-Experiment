@@ -95,8 +95,7 @@ ret:
 #define Len 4
 #define END_ADDR(start_addr, n) \
 	((start_addr + Len * n) > PMEM_SIZE ) ? \
-   	(start_addr + (PMEM_SIZE - start_addr) / Len) : (start_addr + Len * n) 
-
+   	(start_addr + (PMEM_SIZE - start_addr) / Len) : (start_addr + Len * n)
 static inline bool my_in_pmem(paddr_t addr) { return (addr >= PMEM_BASE) && (addr < PMEM_BASE + PMEM_SIZE); }
 
 static int cmd_x(char *args){
@@ -110,12 +109,14 @@ static int cmd_x(char *args){
 		sscanf(args, "%u %x", &n, &addr);
 		/*whether it need to check addr by myself?*/
 	    if (my_in_pmem(addr)){
+			
+			printf("PMEM_SIZE = %#x, start_addr + Len * n = %#x\n", PMEM_SIZE, addr+Len*n); 
 			end_addr = END_ADDR(addr, n);
 			/*
 			for (; addr < end_addr; addr += Len)
 				printf(FMT_WORD":  "FMT_WORD"\n", addr, vaddr_read(addr, Len));
 			*/
-			printf("n=%d, addr=%#x, end_addr=%#x", n, addr, end_addr);
+			printf("n=%d, addr=%#x, end_addr=%#x\n", n, addr, end_addr);
 		}
 		else
 			printf("Cannot access address "FMT_WORD"\n", addr);	
