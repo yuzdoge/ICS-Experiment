@@ -69,7 +69,8 @@ static struct {
 #define NR_INFO (sizeof(info_opt) / sizeof(info_opt[0])) 
 
 static int cmd_info(char *args){
-	char *arg = strtok(NULL, " ");
+    char *arg = NULL;
+	sscanf(args, "%ms", &arg);
 	int i;
 	if (arg == NULL)
 		printf("Try `help info` for more information\n");
@@ -77,11 +78,13 @@ static int cmd_info(char *args){
 		for (i = 0; i < NR_INFO; i++){
 			if (strcmp(arg, info_opt[i].name) == 0){
 				info_opt[i].handler();
-				return 0;
+				goto ret;
 			}
 		}
 		printf("Unknown cammand `%s`\n", arg);
 	}	
+ret:
+	free(arg);
 	return 0;
 }
 
