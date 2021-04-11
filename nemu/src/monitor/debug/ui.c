@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <memory/paddr.h>
+#include <memory/vaddr.h>
 
 void cpu_exec(uint64_t);
 int is_batch_mode();
@@ -90,6 +92,35 @@ ret:
 }
 
 
+#define Len 4
+#define END_ADDR(start_addr, n) \
+	((start_addr + Len * n) > PMEM_SIZE ) ? \
+   	(start_addr + (PMEM_SIZE - start_addr) / Len) : (start_addr + Len * n) 
+
+static inline bool my_in_pmem(paddr_t addr) { return (addr >= PMEM_BASE) && (addr < PMEM_BASE + PMEM_SIZE); }
+
+static int cmd_x(char *args){
+	paddr_t addr;
+	paddr_t end_addr;
+	unsigned int n;
+	if (args == NULL)
+		printf("Try `help x` for more information\n");
+	else{
+		/*表达式求值*/
+		sscanf(args, "%u %x", &n, &addr);
+		/*whether it need to check addr by myself?*/
+	    if (my_in_pmem(addr)){
+			end_addr = END_ADDR(addr, n);
+			for (; addr < end_addr; addr += Len)
+				printf(FMT_WORD":  "FMT_WORD"\n", addr, vaddr_read(addr, Len));
+		}
+		else
+			printf("Cannot access address "FMT_WORD"\n", addr);	
+	}	
+	return 0;
+}
+
+
 static int cmd_help(char *args);
 
 static struct {
@@ -104,7 +135,11 @@ static struct {
   { "info", "Show things about the program being debugged\n"
 		    "\tUsage: info [r|w]\n"
 			"\t\tr\tlist of all registers and their content\n"
-			"\t\tw\tinformation of status of watchpoints\n", cmd_info },
+			"\t\tw\tinformation of status of watchpoints", cmd_info },
+  { "x", "Examine Memory\n"
+		 "\tUsage: x N EXPR\n"
+		 "\tEXPR is an expression indicating the start address to examine, N is the repeat count of 4 bytes", cmd_x },
+		 
   /* TODO: Add more commands */
 
 };
