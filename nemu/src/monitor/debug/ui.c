@@ -100,8 +100,8 @@ ret:
 static inline bool my_in_pmem(paddr_t addr) { return (addr >= PMEM_BASE) && (addr < PMEM_BASE + PMEM_SIZE); }
 
 static int cmd_x(char *args){
-	paddr_t addr;
-	paddr_t end_addr;
+	vaddr_t addr;
+	vaddr_t end_addr;
 	unsigned int n;
 	if (args == NULL)
 		printf("Try `help x` for more information\n");
