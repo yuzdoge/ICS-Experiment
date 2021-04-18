@@ -121,10 +121,11 @@ static bool make_token(char *e) {
     printf("nr_token=%d\n", nr_token);
     for (i = 0; i < nr_token; i++){
         if (tokens[i].type == TK_DIGIT)
-			printf("tokens[%d]: %s\n", i, tokens[i].str);
+			printf("tokens[%d]: %s", i, tokens[i].str);
 		else
-			printf("tokens[%d]: %c\n", i, tokens[i].type);	
+			printf("tokens[%d]: %c", i, tokens[i].type);	
 	}
+	printf("\n");
   return true;
 }
 
