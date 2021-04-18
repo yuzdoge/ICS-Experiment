@@ -121,9 +121,9 @@ static bool make_token(char *e) {
     printf("nr_token=%d\n", nr_token);
     for (i = 0; i < nr_token; i++){
         if (tokens[i].type == TK_DIGIT)
-			printf("tokens[%d]: %s", i, tokens[i].str);
+			printf("%s",tokens[i].str);
 		else
-			printf("tokens[%d]: %c", i, tokens[i].type);	
+			printf("%c",tokens[i].type);	
 	}
 	printf("\n");
   return true;
@@ -135,9 +135,9 @@ word_t expr(char *e, bool *success) {
     *success = false;
     return 0;
   }
-
   /* TODO: Insert codes to evaluate the expression. */
   //TODO();
-
+  
+  printf("Todo\n");
   return 0;
 }
