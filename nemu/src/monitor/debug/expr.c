@@ -116,8 +116,7 @@ static bool make_token(char *e) {
       return false;
     }
   }
-
-//temp_debug
+/*
     printf("nr_token=%d\n", nr_token);
     for (i = 0; i < nr_token; i++){
         if (tokens[i].type == TK_DIGIT)
@@ -126,6 +125,7 @@ static bool make_token(char *e) {
 			printf("%c",tokens[i].type);	
 	}
 	printf("\n");
+i*/
   return true;
 }
 
