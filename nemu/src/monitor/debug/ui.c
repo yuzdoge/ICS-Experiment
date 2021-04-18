@@ -128,8 +128,10 @@ static int cmd_p(char *args){
 	char temp[0];
 	word_t eval __attribute__((unused));
 	bool success;
-	if (args == NULL || sscanf(args, "%s", temp) == -1)
+	if (args == NULL || sscanf(args, "%s", temp) == -1){
 		printf("Try `help p` for more information\n");
+		return 0;
+	}
 	eval = expr(args, &success);
 	return 0;
 }
