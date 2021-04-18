@@ -6,10 +6,9 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ,
+  TK_NOTYPE = 256, TK_EQ, TK_DIGIT 
 
   /* TODO: Add more token types */
-
 };
 
 static struct rule {
@@ -23,7 +22,13 @@ static struct rule {
 
   {" +", TK_NOTYPE},    // spaces
   {"\\+", '+'},         // plus
+  {"-", '-'},			// minus
+  {"\\*", '*'},         // multiply
+  {"/", '/'},			// divide
+  {"\\(", '('},			// left parenthesis
+  {"\\)", ')'},			// right parenthesis
   {"==", TK_EQ},        // equal
+  {"[[:digit:]]+", TK_DIGIT}		// decimal digit
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]) )
@@ -66,6 +71,12 @@ static bool make_token(char *e) {
     /* Try all rules one by one. */
     for (i = 0; i < NR_REGEX; i ++) {
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
+
+		if (nr_token >= 32){
+			printf("Too much tokens in the expression, which must be less than 32\n");
+			return false;
+		}
+
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
 
@@ -80,6 +91,19 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {
+		  case '+': case '-': case '*': case '/': case '(': case ')': case TK_EQ:
+			tokens[nr_token++].type = rules[i].token_type; break;
+		  case TK_DIGIT: 
+			if (substr_len >= 32){
+				printf("Token at position %d is too long, which must be less than 32 characters\n"
+					   "%s\n%*.s^\n", position, e, position, "");
+				return false;
+			}
+			memcpy(tokens[nr_token].str, substr_start, substr_len);
+			tokens[nr_token].str[substr_len + 1] = '\0';
+			tokens[nr_token++].type = rules[i].token_type;
+			break;
+		  case TK_NOTYPE: break;
           default: TODO();
         }
 
@@ -93,6 +117,14 @@ static bool make_token(char *e) {
     }
   }
 
+//temp_debug
+    printf("nr_token=%d\n", nr_token);
+    for (i = 0; i < nr_token; i++){
+        if (tokens[i].type == TK_DIGIT)
+			printf("tokens[%d]: %s\n", i, tokens[i].str);
+		else
+			printf("tokens[%d]: %c\n", i, tokens[i].type);	
+	}
   return true;
 }
 
@@ -104,7 +136,7 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  TODO();
+  //TODO();
 
   return 0;
 }

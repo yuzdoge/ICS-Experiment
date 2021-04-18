@@ -48,7 +48,7 @@ static int cmd_si(char *args){
 		if (sscanf(arg, "%llu", &n) != 1){
 			printf("Argument %s is not numeric\n", arg);		
 			return 0;
-		}
+		 }
 		if ((arg = strtok(NULL, " ")) != NULL){
 			*(arg + strlen(arg)) = ' ';
 			printf("Too much argument `%s`\n", arg);	
@@ -73,13 +73,14 @@ static struct {
 
 static int cmd_info(char *args){
     char *arg = NULL;
-	sscanf(args, "%ms", &arg);
 	int i;
+	if (args != NULL)
+		sscanf(args, "%ms", &arg);
 	if (arg == NULL)
 		printf("Try `help info` for more information\n");
-	else{
-		for (i = 0; i < NR_INFO; i++){
-			if (strcmp(arg, info_opt[i].name) == 0){
+ 	else{
+ 		for (i = 0; i < NR_INFO; i++){
+ 			if (strcmp(arg, info_opt[i].name) == 0){
 				info_opt[i].handler();
 				goto ret;
 			}
@@ -115,10 +116,21 @@ static int cmd_x(char *args){
 			for (; addr < end_addr; addr += Len)
 				printf(FMT_WORD":  "FMT_WORD"\n", addr, vaddr_read(addr, Len));
 			//printf("n=%d, addr=%#x, end_addr=%#x\n", n, addr, end_addr);
-		}
+ 		}
 		else
 			printf("Cannot access address "FMT_WORD"\n", addr);	
-	}	
+ 	}	
+	return 0;
+}
+
+
+static int cmd_p(char *args){
+	char temp[0];
+	word_t eval __attribute__((unused));
+	bool success;
+	if (args == NULL || sscanf(args, "%s", temp) == -1)
+		printf("Try `help p` for more information\n");
+	eval = expr(args, &success);
 	return 0;
 }
 
@@ -141,7 +153,7 @@ static struct {
   { "x", "Examine Memory\n"
 		 "\tUsage: x N EXPR\n"
 		 "\tEXPR is an expression indicating the start address to examine, N is the repeat count of 4 bytes", cmd_x },
-		 
+  { "p", "exvaluate expression\n\tUsage: p EXPR\n\tEXPR is an expression", cmd_p}, 
   /* TODO: Add more commands */
 
 };
