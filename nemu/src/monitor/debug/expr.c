@@ -89,7 +89,7 @@ static bool make_token(char *e) {
          * to record the token in the array `tokens'. For certain types
          * of tokens, some extra actions should be performed.
          */
-
+		/*
         switch (rules[i].token_type) {
 		  case '+': case '-': case '*': case '/': case '(': case ')': case TK_EQ:
 			tokens[nr_token++].type = rules[i].token_type; break;
@@ -106,7 +106,7 @@ static bool make_token(char *e) {
 		  case TK_NOTYPE: break;
           default: TODO();
         }
-
+		*/
         break;
       }
     }

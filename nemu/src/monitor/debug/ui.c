@@ -133,7 +133,7 @@ static int cmd_p(char *args){
 		return 0;
 	}
 	eval = expr(args, &success);
-	printf("eval=%d\n", eval);
+	printf("eval=%d, success=%d\n", eval, success);
 	return 0;
 }
 
