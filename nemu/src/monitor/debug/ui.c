@@ -125,13 +125,15 @@ static int cmd_x(char *args){
 
 
 static int cmd_p(char *args){
-	char temp[0];
+	char *temp;
 	word_t eval __attribute__((unused));
 	bool success;
-	if (args == NULL || sscanf(args, "%s", temp) == -1){
+	if (args == NULL || sscanf(args, "%ms", &temp) == -1){
 		printf("Try `help p` for more information\n");
+		free(temp);
 		return 0;
 	}
+	free(temp);
 	eval = expr(args, &success);
 	printf("eval=%d, success=%d\n", eval, success);
 	return 0;
