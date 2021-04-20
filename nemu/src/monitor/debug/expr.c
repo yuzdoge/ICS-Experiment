@@ -89,7 +89,7 @@ static bool make_token(char *e) {
          * to record the token in the array `tokens'. For certain types
          * of tokens, some extra actions should be performed.
          */
-		/*
+		
         switch (rules[i].token_type) {
 		  case '+': case '-': case '*': case '/': case '(': case ')': case TK_EQ:
 			tokens[nr_token++].type = rules[i].token_type; break;
@@ -106,7 +106,7 @@ static bool make_token(char *e) {
 		  case TK_NOTYPE: break;
           default: TODO();
         }
-		*/
+		
         break;
       }
     }
@@ -116,19 +116,14 @@ static bool make_token(char *e) {
       return false;
     }
   }
-/*
-    printf("nr_token=%d\n", nr_token);
-    for (i = 0; i < nr_token; i++){
-        if (tokens[i].type == TK_DIGIT)
-			printf("%s",tokens[i].str);
-		else
-			printf("%c",tokens[i].type);	
-	}
-	printf("\n");
-i*/
   return true;
 }
 
+/*
+static word_t eval(int start, int end){
+
+}
+*/
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
