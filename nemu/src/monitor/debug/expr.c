@@ -157,21 +157,19 @@ static word_t eval(int start, int end){
   if (start > end){
   }
   else if (start == end){
-    if (tokens[start].type != TK_DIGIT){
-	  legal_parentheses = false;
-	  return 0;
-	}
+    if (tokens[start].type != TK_DIGIT)
+	  goto err;
   }
   else if (check_parentheses(start, end) == true){
     printf("match\n");  
+	return 0;
   }
   else{
     if (legal_parentheses == false)
-	{
-	  printf("a syntax error in expression\n");
-	  return 0;	
-	}
+	  goto err;
   }
+err:  
+  printf("a syntax error in expression\n");
   return 0;
   
 }
