@@ -41,22 +41,22 @@ static int cmd_q(char *args) {
 
 
 static int cmd_si(char *args){
-	char *arg; 
-	unsigned long long n = 1;
-	/*Only accept numeric argument, constant expression is not be allowed*/
-	if (args && (arg = strtok(args, " "))){
-		if (sscanf(arg, "%llu", &n) != 1){
-			printf("Argument %s is not numeric\n", arg);		
-			return 0;
-		 }
-		if ((arg = strtok(NULL, " ")) != NULL){
-			*(arg + strlen(arg)) = ' ';
-			printf("Too much argument `%s`\n", arg);	
-			return 0;
-		}
+  char *arg; 
+  unsigned long long n = 1;
+  /*Only accept numeric argument, constant expression is not be allowed*/
+  if (args && (arg = strtok(args, " "))){
+	if (sscanf(arg, "%llu", &n) != 1){
+	  printf("Argument %s is not numeric\n", arg);		
+	  return 0;
 	}
-	cpu_exec(n);
-	return 0;
+	if ((arg = strtok(NULL, " ")) != NULL){
+	  *(arg + strlen(arg)) = ' ';
+	  printf("Too much argument `%s`\n", arg);	
+	  return 0;
+	}
+  }
+  cpu_exec(n);
+  return 0;
 }
 
 
@@ -72,71 +72,72 @@ static struct {
 #define NR_INFO (sizeof(info_opt) / sizeof(info_opt[0])) 
 
 static int cmd_info(char *args){
-    char *arg = NULL;
-	int i;
-	if (args != NULL)
-		sscanf(args, "%ms", &arg);
-	if (arg == NULL)
-		printf("Try `help info` for more information\n");
- 	else{
- 		for (i = 0; i < NR_INFO; i++){
- 			if (strcmp(arg, info_opt[i].name) == 0){
-				info_opt[i].handler();
-				goto ret;
-			}
-		}
-		printf("Unknown option `%s`\n", arg);
-	}	
+  char *arg = NULL;
+  int i;
+  if (args != NULL)
+	sscanf(args, "%ms", &arg);
+  if (arg == NULL)
+	printf("Try `help info` for more information\n");
+  else{
+	for (i = 0; i < NR_INFO; i++){
+	  if (strcmp(arg, info_opt[i].name) == 0){
+		info_opt[i].handler();
+		goto ret;
+	  }
+	}
+	  printf("Unknown option `%s`\n", arg);
+  }	
 ret:
-	free(arg);
-	return 0;
+  free(arg);
+  return 0;
 }
 
 
 #define Len 4
 #define END_ADDR(start_addr, n) \
-	((start_addr + Len * n) >= PMEM_BASE + PMEM_SIZE ) ? \
-   	(start_addr + (PMEM_BASE + PMEM_SIZE - start_addr) / Len) : (start_addr + Len * n)
+  ((start_addr + Len * n) >= PMEM_BASE + PMEM_SIZE ) ? \
+  (start_addr + (PMEM_BASE + PMEM_SIZE - start_addr) / Len) : (start_addr + Len * n)
 
 static inline bool my_in_pmem(paddr_t addr) { return (addr >= PMEM_BASE) && (addr < PMEM_BASE + PMEM_SIZE); }
 
 static int cmd_x(char *args){
-	vaddr_t addr;
-	vaddr_t end_addr;
-	unsigned int n;
-	if (args == NULL)
-		printf("Try `help x` for more information\n");
-	else{
-		/*表达式求值*/
-		sscanf(args, "%u %x", &n, &addr);
-		/*whether it need to check addr by myself?*/
-	    if (my_in_pmem(addr)){
-			//printf("PMEM_SIZE = %#x, start_addr + Len * n = %#x\n", PMEM_SIZE, addr+Len*n); 
-			end_addr = END_ADDR(addr, n);
-			for (; addr < end_addr; addr += Len)
-				printf(FMT_WORD":  "FMT_WORD"\n", addr, vaddr_read(addr, Len));
-			//printf("n=%d, addr=%#x, end_addr=%#x\n", n, addr, end_addr);
- 		}
-		else
-			printf("Cannot access address "FMT_WORD"\n", addr);	
- 	}	
-	return 0;
+  vaddr_t addr;
+  vaddr_t end_addr;
+  unsigned int n;
+  if (args == NULL)
+    printf("Try `help x` for more information\n");
+  else{
+	/*表达式求值*/
+	sscanf(args, "%u %x", &n, &addr);
+	/*whether it need to check addr by myself?*/
+	if (my_in_pmem(addr)){
+	  //printf("PMEM_SIZE = %#x, start_addr + Len * n = %#x\n", PMEM_SIZE, addr+Len*n); 
+	  end_addr = END_ADDR(addr, n);
+	  for (; addr < end_addr; addr += Len)
+		printf(FMT_WORD":  "FMT_WORD"\n", addr, vaddr_read(addr, Len));
+		//printf("n=%d, addr=%#x, end_addr=%#x\n", n, addr, end_addr);
+	}
+	else
+	  printf("Cannot access address "FMT_WORD"\n", addr);	
+  }	
+  return 0;
 }
 
 
 static int cmd_p(char *args){
-	char *temp;
-	word_t eval __attribute__((unused));
-	bool success;
-	if (args == NULL || sscanf(args, "%ms", &temp) == -1){
-		printf("Try `help p` for more information\n");
-		free(temp);
-		return 0;
-	}
-	free(temp);
-	eval = expr(args, &success);
-	printf("eval=%d, success=%d\n", eval, success);
-	return 0;
+  char *temp;
+  word_t eval;
+  bool success;
+  if (args == NULL || sscanf(args, "%ms", &temp) == -1){
+	  printf("Try `help p` for more information\n");
+	  free(temp);
+	  return 0;
+  }
+  free(temp);
+  eval = expr(args, &success);
+  if (success)
+	  printf("eval=%d\n", eval);
+  return 0;
 }
 
 

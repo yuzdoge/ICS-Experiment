@@ -119,11 +119,59 @@ static bool make_token(char *e) {
   return true;
 }
 
-/*
-static word_t eval(int start, int end){
 
+static bool legal_parentheses = true;  
+
+static bool check_parentheses(int start, int end){
+  bool flag = false; 
+  legal_parentheses = true;
+
+  /*legitimacy judgment of parentheses*/	
+  int nr_bottom = 0; //times of touching the bottom of stack
+  int stack_top = -1; // stack_top >=0 means that there are `(` in the stack
+  for (int i = start; i <= end; i++){
+    if (tokens[i].type == '('){
+	  if (stack_top == -1)
+        nr_bottom++;
+	  ++stack_top;
+	}
+	else if (tokens[i].type == ')'){
+	  if (stack_top < 0){
+	    legal_parentheses = false;
+		break;
+	  }		
+	  --stack_top;
+	}
+  }	
+  if (stack_top >= 0)
+    legal_parentheses = false;
+
+  /*check whether the most left parentheses matches with the right parentheses*/
+  if (legal_parentheses == true && tokens[start].type == '(' && tokens[end].type== ')' && nr_bottom == 1)
+    flag = true;	  
+
+  return flag;
 }
-*/
+
+static word_t eval(int start, int end){
+  if (start > end){
+  }
+  else if (start == end){
+  }
+  else if (check_parentheses(start, end) == true){
+    
+  }
+  else{
+    if (legal_parentheses == false)
+	{
+	  printf("a syntax error in expression\n");
+	  return 0;	
+	}
+  }
+  return 0;
+  
+}
+
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
@@ -132,6 +180,8 @@ word_t expr(char *e, bool *success) {
   }
   /* TODO: Insert codes to evaluate the expression. */
   //TODO();
-  *success = true;
-  return 0;
+  
+  word_t result = eval(0, nr_token - 1); 
+  *success = legal_parentheses;
+  return result;
 }
