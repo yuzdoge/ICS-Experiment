@@ -124,7 +124,6 @@ static bool legal_parentheses = true;
 
 static bool check_parentheses(int start, int end){
   bool flag = false; 
-  legal_parentheses = true;
 
   /*legitimacy judgment of parentheses*/	
   int nr_bottom = 0; //times of touching the bottom of stack
@@ -154,11 +153,15 @@ static bool check_parentheses(int start, int end){
 }
 
 static word_t eval(int start, int end){
+  legal_parentheses = true;
   if (start > end){
   }
   else if (start == end){
-    if (tokens[start].type != TK_DIGIT)
+    if (tokens[start].type != TK_DIGIT){
+	  legal_parentheses = false;
 	  goto err;
+	}
+	return 0;
   }
   else if (check_parentheses(start, end) == true){
     printf("match\n");  
