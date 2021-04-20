@@ -130,7 +130,8 @@ static int cmd_p(char *args){
   bool success;
   if (args == NULL || sscanf(args, "%ms", &temp) == -1){
 	  printf("Try `help p` for more information\n");
-	  free(temp);
+	  if (args != NULL)
+		free(temp);
 	  return 0;
   }
   free(temp);
