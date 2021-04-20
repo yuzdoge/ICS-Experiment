@@ -167,6 +167,7 @@ static word_t eval(int start, int end){
   else{
     if (legal_parentheses == false)
 	  goto err;
+	return 0;
   }
 err:  
   printf("a syntax error in expression\n");
