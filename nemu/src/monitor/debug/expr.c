@@ -236,7 +236,8 @@ static word_t eval(int start, int end){
 	return eval(start + 1, end - 1);
   }
   else{
-    mop_pos = find_mainop(start, end);	
+    if ((mop_pos = find_mainop(start, end)) == -1);	
+	  panic("a systax error in the expression\n");	
 	left_val = eval(start, mop_pos - 1);
 	right_val = eval(mop_pos + 1, end);
 
