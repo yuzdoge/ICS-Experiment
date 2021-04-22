@@ -180,7 +180,7 @@ static int find_mainop(int start, int end){
 		 * the first `if statement` of the next cases will not be true.
 		 */
 	  case '*': case '/': 
-		if (tokens[mop_pos].type != '+' || tokens[mop_pos].type != '-') 
+		if (tokens[mop_pos].type != '+' && tokens[mop_pos].type != '-') 
 		  mop_pos = current;
 		if (expected_op == NonOp)
 		  return -1;
