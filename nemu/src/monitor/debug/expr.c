@@ -120,34 +120,46 @@ static bool make_token(char *e) {
 }
 
 
-static bool legal_parentheses = true;  
+static bool islegal_parentheses(int start, int end){
+  /*legitimacy judgment of parentheses*/	
+ 
+  bool legal = true;
+  int stack_top = -1;
+  for (int i = start; i <= end; i++){
+    if (tokens[i].type == '(')
+	  ++stack_top;
+	else if (tokens[i].type == ')'){
+	  if (stack_top < 0)
+	    return false;	
+	  --stack_top;
+	}
+  }
+  /* stack_top >=0 means that there are `(` in the stack*/
+  if (stack_top >= 0) 
+    legal = false;
+  
+  return legal;
+}
 
 static bool check_parentheses(int start, int end){
   bool flag = false; 
+  //int nr_bottom = 0; //times of touching the bottom of stack
+  int stack_top = 0; 
 
-  /*legitimacy judgment of parentheses*/	
-  int nr_bottom = 0; //times of touching the bottom of stack
-  int stack_top = -1; // stack_top >=0 means that there are `(` in the stack
-  for (int i = start; i <= end; i++){
-    if (tokens[i].type == '('){
-	  if (stack_top == -1)
-        nr_bottom++;
+  if (tokens[start].type == '(' && tokens[end].type== ')'){
+    for (int i = start + 1; i <= end; i++){
+      if (tokens[i].type == '('){
+	    if (stack_top == -1)
+		  return false; // for instance (exp)+(exp)  
+          //nr_bottom++;
 	  ++stack_top;
-	}
-	else if (tokens[i].type == ')'){
-	  if (stack_top < 0){
-	    legal_parentheses = false;
-		break;
-	  }		
-	  --stack_top;
-	}
-  }	
-  if (stack_top >= 0)
-    legal_parentheses = false;
-
-  /*check whether the most left parentheses matches with the right parentheses*/
-  if (legal_parentheses == true && tokens[start].type == '(' && tokens[end].type== ')' && nr_bottom == 1)
-    flag = true;	  
+	  }
+	  else if (tokens[i].type == ')'){
+	    --stack_top;
+	  }
+	}	
+	flag = true;	  
+  }
 
   return flag;
 }
@@ -208,7 +220,6 @@ static word_t strtoui(char *str){
 }
 
 static word_t eval(int start, int end){
-  legal_parentheses = true;
   word_t left_val, right_val;
   int mop_pos;
   if (start > end){
@@ -216,10 +227,8 @@ static word_t eval(int start, int end){
     panic("start=%d > start=%d\n", start, end);
   }
   else if (start == end){
-    if (tokens[start].type != TK_DIGIT){
-	  legal_parentheses = false;
-	  goto err;
-	}
+    if (tokens[start].type != TK_DIGIT)
+	  panic("the token at position %d is not digit\n", start);
 	return strtoui(tokens[start].str);
   }
   else if (check_parentheses(start, end) == true){
@@ -227,9 +236,6 @@ static word_t eval(int start, int end){
 	return eval(start + 1, end - 1);
   }
   else{
-    if (legal_parentheses == false)
-	  goto err;
-
     mop_pos = find_mainop(start, end);	
 	left_val = eval(start, mop_pos - 1);
 	right_val = eval(mop_pos + 1, end);
@@ -245,22 +251,24 @@ static word_t eval(int start, int end){
 	  default: assert(0);
 	}
   }
-err:  
-  printf("a syntax error in expression\n");
-  return 0;
-  
 }
 
 
-word_t expr(char *e, bool *success) {
+word_t expr(char *e, bool *success){
   if (!make_token(e)) {
     *success = false;
     return 0;
   }
   /* TODO: Insert codes to evaluate the expression. */
   //TODO();
-  
-  word_t result = eval(0, nr_token - 1); 
-  *success = legal_parentheses;
+ 
+  bool legal; 
+  word_t result = 0;
+  if ((legal = islegal_parentheses(0, nr_token - 1)) == true)
+	result = eval(0, nr_token - 1); 
+  else
+	printf("a syntax error in the expression\n");
+
+  *success = legal;
   return result;
 }
