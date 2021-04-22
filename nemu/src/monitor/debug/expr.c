@@ -152,25 +152,98 @@ static bool check_parentheses(int start, int end){
   return flag;
 }
 
+static int go_foward(int cursor){
+  if (tokens[cursor].type == '('){
+	int stack_top = 0;
+	while (stack_top != -1){
+		++cursor;	
+		if (tokens[cursor].type == '(')
+			++stack_top;
+		else if (tokens[cursor].type == ')')
+			stack_top--;
+	}
+  }
+  return ++cursor; //point to the next atom
+}
+
+static int find_mainop(int start, int end){
+#define NonOp false
+#define Op true
+  bool expected_op = NonOp;  
+  int mop_pos = 0; 
+  for (int current = start; current <= end; current=go_foward(current)){
+    switch (tokens[current].type){
+	  case '+': case '-': 
+		mop_pos = current; 
+		/* it is still correct even though no `break` here, 
+		 * because once this statement excuted,
+		 * the first `if statement` of the next cases will not be true.
+		 */
+	  case '*': case '/': 
+		if (tokens[mop_pos].type != '+' || tokens[mop_pos].type != '-') 
+		  mop_pos = current;
+		if (expected_op == NonOp)
+		  return -1;
+	    break;
+	  default:
+	    if (expected_op == Op)	
+		  return -1;
+	}
+	  expected_op = ~expected_op; 
+  }
+  if (expected_op == NonOp)
+	  return -1; // it means that the last atom is operater
+  
+  return mop_pos; 
+  /* mop will never be zero, because it is an error that, 
+   * there is no operator,and it will return -1 above.
+   */
+}
+
+static word_t strtoui(char *str){
+  word_t val = 0;
+  for (int i = 0; str[i] != '\0'; i++)
+    val = 10*val + (str[i] - '0'); 
+  return val;
+}
+
 static word_t eval(int start, int end){
   legal_parentheses = true;
+  word_t left_val, right_val;
+  int mop_pos;
   if (start > end){
+	//for instance, `()` -> `` -> start > end
+    panic("start=%d > start=%d\n", start, end);
   }
   else if (start == end){
     if (tokens[start].type != TK_DIGIT){
 	  legal_parentheses = false;
 	  goto err;
 	}
-	return 0;
+	return strtoui(tokens[start].str);
   }
   else if (check_parentheses(start, end) == true){
     printf("match\n");  
-	return 0;
+	return eval(start + 1, end - 1);
   }
   else{
     if (legal_parentheses == false)
 	  goto err;
-	return 0;
+
+    mop_pos = find_mainop(start, end);	
+	left_val = eval(start, mop_pos - 1);
+	right_val = eval(mop_pos + 1, end);
+
+	switch(tokens[mop_pos].type){
+	  case '+': return left_val + right_val;
+	  case '-': return left_val - right_val;
+	  case '*': return left_val * right_val;
+	  case '/': 
+		if (right_val == 0) 
+		  panic("divide by zero\n"); 
+		return left_val / right_val;   
+	  default: assert(0);
+	}
   }
 err:  
   printf("a syntax error in expression\n");
