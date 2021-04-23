@@ -137,7 +137,10 @@ static int cmd_p(char *args){
   free(temp);
   eval = expr(args, &success);
   if (success)
-	  printf("eval=%d\n", eval);
+	printf("success\n");
+  else
+	printf("fail\n");
+  printf("eval=%d\n", eval);
   return 0;
 }
 

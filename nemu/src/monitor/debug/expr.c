@@ -219,25 +219,38 @@ static word_t strtoui(char *str){
   return val;
 }
 
+static bool error_flag; 
+
 static word_t eval(int start, int end){
+  if (error_flag == false)
+	  return 0;
+
   word_t left_val, right_val;
   int mop_pos;
   if (start > end){
 	//for instance, `()` -> `` -> start > end
-    panic("start=%d > start=%d\n", start, end);
+    printf("a syntax error:start=%d > end=%d\n", start, end);
+	error_flag = false;
+	return 0;
   }
   else if (start == end){
-    if (tokens[start].type != TK_DIGIT)
-	  panic("the token at position %d is not digit\n", start);
+    if (tokens[start].type != TK_DIGIT){
+	  printf("a syntax error:the token at position %d is not digit\n", start);
+	  error_flag = false;
+	  return 0;
+	}
 	return strtoui(tokens[start].str);
   }
   else if (check_parentheses(start, end) == true){
-    printf("match\n");  
+    printf("left parentheses %d matches with right parentheses %d\n", start, end);  
 	return eval(start + 1, end - 1);
   }
   else{
-    if ((mop_pos = find_mainop(start, end)) == -1);	
-	  panic("a systax error in the expression\n");	
+    if ((mop_pos = find_mainop(start, end)) == -1){
+	  printf("a systax error in the expression:missing mainop\n");	
+	  error_flag = false;
+	  return 0;	
+	}
 	left_val = eval(start, mop_pos - 1);
 	right_val = eval(mop_pos + 1, end);
 
@@ -246,8 +259,12 @@ static word_t eval(int start, int end){
 	  case '-': return left_val - right_val;
 	  case '*': return left_val * right_val;
 	  case '/': 
-		if (right_val == 0) 
-		  panic("divide by zero\n"); 
+		if (right_val == 0)
+		{	
+		  printf("divide by zero\n"); 
+		  error_flag = false;
+		  return 0; 
+		}
 		return left_val / right_val;   
 	  default: assert(0);
 	}
@@ -265,11 +282,13 @@ word_t expr(char *e, bool *success){
  
   bool legal; 
   word_t result = 0;
-  if ((legal = islegal_parentheses(0, nr_token - 1)) == true)
+  if ((legal = islegal_parentheses(0, nr_token - 1)) == true){
+	error_flag = true;
 	result = eval(0, nr_token - 1); 
+  }
   else
-	printf("a syntax error in the expression\n");
+	printf("a syntax error in the expression:ilegal_parentheses\n");
 
-  *success = legal;
+  *success = legal&error_flag;
   return result;
 }
