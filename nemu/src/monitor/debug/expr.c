@@ -243,7 +243,7 @@ static word_t eval(int start, int end){
 	return strtoui(tokens[start].str);
   }
   else if (check_parentheses(start, end) == true){
-    report_err("left parentheses %d matches with right parentheses %d\n", start, end);  
+    printf("left parentheses %d matches with right parentheses %d\n", start, end);  
 	return eval(start + 1, end - 1);
   }
   else{
