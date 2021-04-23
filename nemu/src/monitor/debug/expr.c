@@ -220,6 +220,12 @@ static word_t strtoui(char *str){
 }
 
 static bool error_flag; 
+#define report_err(...) \
+  do { \
+	printf(__VA_ARGS__); \
+	error_flag = false; \
+	return 0; \
+  }while (0)
 
 static word_t eval(int start, int end){
   if (error_flag == false)
@@ -229,28 +235,21 @@ static word_t eval(int start, int end){
   int mop_pos;
   if (start > end){
 	//for instance, `()` -> `` -> start > end
-    printf("a syntax error:start=%d > end=%d\n", start, end);
-	error_flag = false;
-	return 0;
-  }
+    report_err("a syntax error:start=%d > end=%d\n", start, end);
+  } 
   else if (start == end){
-    if (tokens[start].type != TK_DIGIT){
-	  printf("a syntax error:the token at position %d is not digit\n", start);
-	  error_flag = false;
-	  return 0;
-	}
+    if (tokens[start].type != TK_DIGIT)
+	  report_err("a syntax error:the token at position %d is not digit\n", start);
 	return strtoui(tokens[start].str);
   }
   else if (check_parentheses(start, end) == true){
-    printf("left parentheses %d matches with right parentheses %d\n", start, end);  
+    report_err("left parentheses %d matches with right parentheses %d\n", start, end);  
 	return eval(start + 1, end - 1);
   }
   else{
-    if ((mop_pos = find_mainop(start, end)) == -1){
-	  printf("a systax error in the expression:missing mainop\n");	
-	  error_flag = false;
-	  return 0;	
-	}
+    if ((mop_pos = find_mainop(start, end)) == -1)
+	  report_err("a systax error in the expression:missing mainop\n");	
+
 	left_val = eval(start, mop_pos - 1);
 	right_val = eval(mop_pos + 1, end);
 
@@ -260,11 +259,7 @@ static word_t eval(int start, int end){
 	  case '*': return left_val * right_val;
 	  case '/': 
 		if (right_val == 0)
-		{	
-		  printf("divide by zero\n"); 
-		  error_flag = false;
-		  return 0; 
-		}
+		  report_err("divide by zero\n"); 
 		return left_val / right_val;   
 	  default: assert(0);
 	}
