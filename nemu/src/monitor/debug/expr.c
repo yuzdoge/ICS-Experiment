@@ -5,8 +5,10 @@
  */
 #include <regex.h>
 
+#define MAX_TOKENS 32 
 enum {
-  TK_NOTYPE = 256, TK_EQ, TK_DIGIT 
+  TK_NOTYPE = 256, TK_EQ, TK_DIGIT, TK_UNEQ, 
+  TK_AND, TK_DEREF, TK_HEX,
 
   /* TODO: Add more token types */
 };
@@ -20,15 +22,19 @@ static struct rule {
    * Pay attention to the precedence level of different rules.
    */
 
-  {" +", TK_NOTYPE},    // spaces
-  {"\\+", '+'},         // plus
-  {"-", '-'},			// minus
-  {"\\*", '*'},         // multiply
-  {"/", '/'},			// divide
-  {"\\(", '('},			// left parenthesis
-  {"\\)", ')'},			// right parenthesis
-  {"==", TK_EQ},        // equal
-  {"[[:digit:]]+", TK_DIGIT}		// decimal digit
+  {" +", TK_NOTYPE},				// spaces
+  {"[[:digit:]]+", TK_DIGIT},		// decimal digit
+  {"0x[[:xdigit:]]+", TK_HEX},		// hexadecimal digit 
+  {"\\+", '+'},						// plus
+  {"-", '-'},						// minus
+  {"\\*", '*'},						// multiply
+  {"/", '/'},						// divide
+  {"\\(", '('},						// left parenthesis
+  {"\\)", ')'},						// right parenthesis
+  {"\\$", '$'},						// register
+  {"==", TK_EQ},					// equal
+  {"!=", TK_UNEQ},					// unequal
+  {"&&", TK_AND}					// and
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]) )
@@ -57,7 +63,7 @@ typedef struct token {
   char str[32];
 } Token;
 
-static Token tokens[32] __attribute__((used)) = {};
+static Token tokens[MAX_TOKENS] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
 static bool make_token(char *e) {
@@ -72,8 +78,8 @@ static bool make_token(char *e) {
     for (i = 0; i < NR_REGEX; i ++) {
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
 
-		if (nr_token >= 32){
-			printf("Too much tokens in the expression, which must be less than 32\n");
+		if (nr_token >= MAX_TOKENS){
+			printf("Too much tokens in the expression, which must be less than %d\n",MAX_TOKENS);
 			return false;
 		}
 
@@ -91,9 +97,10 @@ static bool make_token(char *e) {
          */
 		
         switch (rules[i].token_type) {
-		  case '+': case '-': case '*': case '/': case '(': case ')': case TK_EQ:
+		  case '+': case '-': case '*': case '/': case '(': case ')': 
+		  case TK_EQ: case TK_AND: case TK_UNEQ:  
 			tokens[nr_token++].type = rules[i].token_type; break;
-		  case TK_DIGIT: 
+		  case TK_DIGIT: case TK_HEX:
 			if (substr_len >= 32){
 				printf("Token at position %d is too long, which must be less than 32 characters\n"
 					   "%s\n%*.s^\n", position, e, position, "");
@@ -103,6 +110,7 @@ static bool make_token(char *e) {
 			tokens[nr_token].str[substr_len + 1] = '\0';
 			tokens[nr_token++].type = rules[i].token_type;
 			break;
+		  case '$': break;
 		  case TK_NOTYPE: break;
           default: TODO();
         }
@@ -212,10 +220,13 @@ static int find_mainop(int start, int end){
    */
 }
 
-static word_t strtoui(char *str){
+static inline int atoui(char c){
+  return c <= '9'? (c - '0'): ((c&0b11011111) - '7');  
+}
+static word_t strtoui(char *str, int base_n){
   word_t val = 0;
   for (int i = 0; str[i] != '\0'; i++)
-    val = 10*val + (str[i] - '0'); 
+    val = base_n*val + atoui(str[i]); 
   return val;
 }
 
@@ -238,9 +249,11 @@ static word_t eval(int start, int end){
     report_err("a syntax error:start=%d > end=%d\n", start, end);
   } 
   else if (start == end){
-    if (tokens[start].type != TK_DIGIT)
-	  report_err("a syntax error:the token at position %d is not digit\n", start);
-	return strtoui(tokens[start].str);
+    if (tokens[start].type == TK_DIGIT)		
+	  return strtoui(tokens[start].str, 10);
+	else if (tokens[start].type == TK_HEX)
+	  return strtoui(tokens[start].str, 16);
+	else report_err("a syntax error:the token at position %d is not digit\n", start);
   }
   else if (check_parentheses(start, end) == true){
     printf("left parentheses %d matches with right parentheses %d\n", start, end);  
