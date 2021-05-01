@@ -79,7 +79,7 @@ static bool make_token(char *e) {
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
 
 		if (nr_token >= MAX_TOKENS){
-			printf("Too much tokens in the expression, which must be less than %d\n",MAX_TOKENS);
+			printf("Too much tokens in the expression, which must be less than %d\n", MAX_TOKENS);
 			return false;
 		}
 
@@ -252,7 +252,7 @@ static word_t eval(int start, int end){
     if (tokens[start].type == TK_DIGIT)		
 	  return strtoui(tokens[start].str, 10);
 	else if (tokens[start].type == TK_HEX)
-	  return strtoui(tokens[start].str, 16);
+	  return strtoui(tokens[start].str + 2, 16);
 	else report_err("a syntax error:the token at position %d is not digit\n", start);
   }
   else if (check_parentheses(start, end) == true){
