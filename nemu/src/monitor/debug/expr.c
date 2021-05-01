@@ -31,7 +31,7 @@ static struct rule {
   {"/", '/'},						// divide
   {"\\(", '('},						// left parenthesis
   {"\\)", ')'},						// right parenthesis
-  {"\\$[[:alpha:]]+", TK_REG},			// register
+  {"\\$[a-zA-Z0-9]+", TK_REG},		// register
   {"==", TK_EQ},					// equal
   {"!=", TK_UNEQ},					// unequal
   {"&&", TK_AND}					// and
