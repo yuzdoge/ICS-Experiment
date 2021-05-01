@@ -254,7 +254,10 @@ static word_t eval(int start, int end){
 	  case TK_REG: 
 	    left_val = isa_reg_str2val(tokens[start].str + 1, &error_flag);
         if (error_flag == true) 
+		{
+		  printf("register %s", tokens[start].str + 1);
 		  return  left_val;
+		}
 		report_err("register %s does not exist\n", tokens[start].str + 1);		
       default:	
 	    report_err("a syntax error:the token at position %d is not digit\n", start);
