@@ -8,7 +8,7 @@
 #define MAX_TOKENS 32 
 enum {
   TK_NOTYPE = 256, TK_EQ, TK_DIGIT, TK_UNEQ, 
-  TK_AND, TK_DEREF, TK_HEX,
+  TK_AND, TK_DEREF, TK_HEX, TK_REG,
 
   /* TODO: Add more token types */
 };
@@ -31,7 +31,7 @@ static struct rule {
   {"/", '/'},						// divide
   {"\\(", '('},						// left parenthesis
   {"\\)", ')'},						// right parenthesis
-  {"\\$", '$'},						// register
+  {"\\$[[:alpha:]]", TK_REG},			// register
   {"==", TK_EQ},					// equal
   {"!=", TK_UNEQ},					// unequal
   {"&&", TK_AND}					// and
@@ -100,7 +100,7 @@ static bool make_token(char *e) {
 		  case '+': case '-': case '*': case '/': case '(': case ')': 
 		  case TK_EQ: case TK_AND: case TK_UNEQ:  
 			tokens[nr_token++].type = rules[i].token_type; break;
-		  case TK_DIGIT: case TK_HEX:
+		  case TK_DIGIT: case TK_HEX: case TK_REG:
 			if (substr_len >= 32){
 				printf("Token at position %d is too long, which must be less than 32 characters\n"
 					   "%s\n%*.s^\n", position, e, position, "");
@@ -110,7 +110,6 @@ static bool make_token(char *e) {
 			tokens[nr_token].str[substr_len + 1] = '\0';
 			tokens[nr_token++].type = rules[i].token_type;
 			break;
-		  case '$': break;
 		  case TK_NOTYPE: break;
           default: TODO();
         }
@@ -249,11 +248,17 @@ static word_t eval(int start, int end){
     report_err("a syntax error:start=%d > end=%d\n", start, end);
   } 
   else if (start == end){
-    if (tokens[start].type == TK_DIGIT)		
-	  return strtoui(tokens[start].str, 10);
-	else if (tokens[start].type == TK_HEX)
-	  return strtoui(tokens[start].str + 2, 16);
-	else report_err("a syntax error:the token at position %d is not digit\n", start);
+    switch (tokens[start].type){
+      case TK_DIGIT: return strtoui(tokens[start].str, 10); 
+	  case TK_HEX: return strtoui(tokens[start].str + 2, 16);;
+	  case TK_REG: 
+	    left_val = isa_reg_str2val(tokens[start].str + 1, &error_flag);
+        if (error_flag == true) 
+		  return  left_val;
+		report_err("register %s does not exist\n", tokens[start].str + 1);		
+      default:	
+	    report_err("a syntax error:the token at position %d is not digit\n", start);
+     }
   }
   else if (check_parentheses(start, end) == true){
     printf("left parentheses %d matches with right parentheses %d\n", start, end);  
