@@ -23,8 +23,8 @@ static struct rule {
    */
 
   {" +", TK_NOTYPE},				// spaces
+  {"0x[[:xdigit:]]+", TK_HEX},		// hexadecimal digit, it must precede decimal digit to be checked. 
   {"[[:digit:]]+", TK_DIGIT},		// decimal digit
-  {"0x[[:xdigit:]]+", TK_HEX},		// hexadecimal digit 
   {"\\+", '+'},						// plus
   {"-", '-'},						// minus
   {"\\*", '*'},						// multiply
