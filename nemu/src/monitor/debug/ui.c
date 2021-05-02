@@ -143,7 +143,7 @@ static int cmd_p(char *args){
 	printf("success\n");
   else
 	printf("fail\n");
-  printf("eval=%d\n, %x", eval, eval);
+  printf("eval=%d, %x\n", eval, eval);
   return 0;
 }
 

@@ -9,10 +9,18 @@
 
 #define MAX_TOKENS 32 
 enum {
-  TK_NOTYPE = 256, TK_EQ, TK_DIGIT, TK_UNEQ, 
-  TK_AND, TK_DEREF, TK_HEX, TK_REG,
-
+  TK_NOTYPE = 256, TK_DIGIT, TK_DEREF, TK_HEX, TK_REG,
+  TK_UNEQ = 271, TK_EQ, TK_AND, 
   /* TODO: Add more token types */
+};
+
+#define NR_BIN_OP 20
+#define BOP_HASH(type) (type % NR_BIN_OP)
+static char bop_priority[NR_BIN_OP] = {
+  [BOP_HASH('+')] = 4, [BOP_HASH('-')] = 4,
+  [BOP_HASH('*')] = 3, [BOP_HASH('/')] = 3,
+  [BOP_HASH(TK_UNEQ)] = 7, [BOP_HASH(TK_EQ)] = 7,
+  [BOP_HASH(TK_AND)] = 11,
 };
 
 static struct rule {
@@ -190,6 +198,7 @@ static int go_foward(int cursor){
 static inline bool is_op_type(int type){
   switch (type){
     case '+': case '-': case '*': case '/': 
+	case TK_EQ: case TK_UNEQ: case TK_AND:
 	  return true;
 	default:
 	  return false;
@@ -200,21 +209,17 @@ static int find_mainop(int start, int end){
 #define NonOp false
 #define Op true
   bool expected_op = NonOp;  
-  int mop_pos = 0; 
+  int mop_pos = 0;  // the main operator has the lowest-priority (the highest value) in the expression
   for (int current = start; current <= end; current=go_foward(current)){
     switch (tokens[current].type){
-	  case '+': case '-': 
-		mop_pos = current; 
-		/* it is still correct even though no `break` here, 
-		 * because once this statement excuted,
-		 * the first `if statement` of the next cases will not be true.
-		 */
-	  case '*': case '/': 
-		if (tokens[mop_pos].type != '+' && tokens[mop_pos].type != '-') 
-		  mop_pos = current;
+	  case TK_AND: case TK_EQ: case TK_UNEQ:
+	  case '+': case '-': case '*': case '/': 
 		if (expected_op == NonOp)
 		  return -1;
-	    break;
+		if (bop_priority[BOP_HASH(tokens[current].type)] >= 
+			bop_priority[BOP_HASH(tokens[mop_pos].type)])
+		  mop_pos = current; 
+		break;
 	  default:
 	    if (expected_op == Op)	
 		  return -1;
