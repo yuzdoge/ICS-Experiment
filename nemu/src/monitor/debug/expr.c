@@ -242,10 +242,13 @@ static int find_mainop(int start, int end){
 static inline int atoui(char c){
   return c <= '9'? (c - '0'): ((c&0b11011111) - '7');  
 }
-static word_t strtoui(char *str, int base_n){
+static inline word_t strtoui(char *str, int base_n){
   word_t val = 0;
-  for (int i = 0; str[i] != '\0'; i++)
-    val = base_n*val + atoui(str[i]); 
+  for (int i = 0; str[i] != '\0'; i++){
+    printf("%c ", str[i]);	
+    val = base_n*val + atoui(str[i]);
+  } 
+  printf("\n");
   return val;
 }
 
