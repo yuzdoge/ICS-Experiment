@@ -185,6 +185,15 @@ static int go_foward(int cursor){
   return ++cursor; //point to the next atom
 }
 
+static inline bool is_op_type(int type){
+  switch (type){
+    case '+': case '-': case '*': case '/': 
+	  return true;
+	default:
+	  return false;
+  }  
+}
+
 static int find_mainop(int start, int end){
 #define NonOp false
 #define Op true
@@ -207,16 +216,20 @@ static int find_mainop(int start, int end){
 	  default:
 	    if (expected_op == Op)	
 		  return -1;
+		while ((current < end) && (tokens[current].type == TK_DEREF))
+	      ++current;		
+		if (is_op_type(tokens[current].type) || tokens[current].type == TK_DEREF)
+		  return -1;
+		else
+		  go_foward(current);
 	}
 	  expected_op = ~expected_op; 
   }
   if (expected_op == NonOp)
 	  return -1; // it means that the last atom is operater
   
-  return mop_pos; 
-  /* mop will never be zero, because it is an error that, 
-   * there is no operator,and it will return -1 above.
-   */
+  return mop_pos; // if mop equal zero, it means that the whole expression is deference 
+   
 }
 
 static inline int atoui(char c){
@@ -268,24 +281,30 @@ static word_t eval(int start, int end){
 	return eval(start + 1, end - 1);
   }
   else{
-    if ((mop_pos = find_mainop(start, end)) == -1)
+	mop_pos = find_mainop(start, end);
+    if (mop_pos == -1)
 	  report_err("a systax error in the expression:missing mainop\n");	
+    else if (mop_pos == 0)
+	  return eval(start + 1, end) + 1; //temp 
+	else{	
+	  left_val = eval(start, mop_pos - 1);
+	  right_val = eval(mop_pos + 1, end);
 
-	left_val = eval(start, mop_pos - 1);
-	right_val = eval(mop_pos + 1, end);
-
-	switch(tokens[mop_pos].type){
-	  case '+': return left_val + right_val;
-	  case '-': return left_val - right_val;
-	  case '*': return left_val * right_val;
-	  case '/': 
-		if (right_val == 0)
-		  report_err("divide by zero\n"); 
-		return left_val / right_val;   
-	  default: assert(0);
-	}
+	  switch(tokens[mop_pos].type){
+		  case '+': return left_val + right_val;
+		  case '-': return left_val - right_val;
+		  case '*': return left_val * right_val;
+		  case '/': 
+			if (right_val == 0)
+			  report_err("divide by zero\n"); 
+			return left_val / right_val;   
+		  default: assert(0);
+	  }
+    }
   }
 }
+
+
 
 
 word_t expr(char *e, bool *success){
@@ -300,6 +319,12 @@ word_t expr(char *e, bool *success){
   word_t result = 0;
   if ((legal = islegal_parentheses(0, nr_token - 1)) == true){
 	error_flag = true;
+	
+	for (int i = 0; i < nr_token; i++){
+	  if (tokens[i].type == '*' && (i == 0 || is_op_type(tokens[i - 1].type) || 
+		   tokens[i - 1].type == '(' || tokens[i - 1].type == TK_DEREF))  
+		tokens[i].type = TK_DEREF;
+	}
 	result = eval(0, nr_token - 1); 
   }
   else
