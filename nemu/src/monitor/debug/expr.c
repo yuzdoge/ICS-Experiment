@@ -1,4 +1,6 @@
 #include <isa.h>
+#include <memory/paddr.h>
+#include <memory/vaddr.h>
 
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
@@ -256,6 +258,7 @@ static word_t eval(int start, int end){
 
   word_t left_val, right_val;
   int mop_pos;
+  vaddr_t addr;
   if (start > end){
 	//for instance, `()` -> `` -> start > end
     report_err("a syntax error:start=%d > end=%d\n", start, end);
@@ -284,8 +287,14 @@ static word_t eval(int start, int end){
 	mop_pos = find_mainop(start, end);
     if (mop_pos == -1)
 	  report_err("a systax error in the expression:missing mainop\n");	
-    else if (mop_pos == 0)
-	  return eval(start + 1, end) + 1; //temp 
+    else if (mop_pos == 0){
+	  addr = (vaddr_t)(eval(start + 1, end));
+	  if ((addr >= PMEM_BASE) && (addr + sizeof(word_t) <= PMEM_BASE + PMEM_SIZE))
+	    return vaddr_read(addr, sizeof(word_t));
+	  else
+	    report_err("cannot access address "FMT_WORD": illegal address or not enough %lu bytes\n", addr, sizeof(word_t));
+       
+	} 
 	else{	
 	  left_val = eval(start, mop_pos - 1);
 	  right_val = eval(mop_pos + 1, end);

@@ -113,8 +113,11 @@ static int cmd_x(char *args){
 	if (my_in_pmem(addr)){
 	  //printf("PMEM_SIZE = %#x, start_addr + Len * n = %#x\n", PMEM_SIZE, addr+Len*n); 
 	  end_addr = END_ADDR(addr, n);
-	  for (; addr < end_addr; addr += Len)
-		printf(FMT_WORD":  "FMT_WORD"\n", addr, vaddr_read(addr, Len));
+	  if (addr == end_addr)
+		printf("Fail to return:not enough %d bytes\n", Len);
+	  else
+		for (; addr < end_addr; addr += Len)
+		  printf(FMT_WORD":  "FMT_WORD"\n", addr, vaddr_read(addr, Len));
 		//printf("n=%d, addr=%#x, end_addr=%#x\n", n, addr, end_addr);
 	}
 	else
