@@ -263,6 +263,7 @@ static word_t eval(int start, int end){
 
   word_t left_val, right_val;
   int mop_pos;
+  int temp;
   vaddr_t addr;
   if (start > end){
 	//for instance, `()` -> `` -> start > end
@@ -270,14 +271,17 @@ static word_t eval(int start, int end){
   } 
   else if (start == end){
     switch (tokens[start].type){
-      case TK_DIGIT: return strtoui(tokens[start].str, 10); 
-	  case TK_HEX: return strtoui(tokens[start].str + 2, 16);;
+      case TK_DIGIT: 
+		  temp = strtoui(tokens[start].str, 10); 
+		  printf("DIGIT=%d\n", temp);
+		  return temp;
+	  case TK_HEX: return strtoui(tokens[start].str + 2, 16);
 	  case TK_REG: 
 	    left_val = isa_reg_str2val(tokens[start].str + 1, &error_flag);
         if (error_flag == true) 
 		{
 		  printf("register %s", tokens[start].str + 1);
-		  return  left_val;
+		  return left_val;
 		}
 		report_err("register %s does not exist\n", tokens[start].str + 1);		
       default:	
@@ -303,7 +307,7 @@ static word_t eval(int start, int end){
 	else{	
 	  left_val = eval(start, mop_pos - 1);
 	  right_val = eval(mop_pos + 1, end);
-	  printf("L=%d, R=%d", left_val, right_val);
+	  printf("L=%d %c R=%d\n", left_val, tokens[mop_pos].type, right_val);
 	  switch(tokens[mop_pos].type){
 		  case '+': return left_val + right_val;
 		  case '-': return left_val - right_val;
