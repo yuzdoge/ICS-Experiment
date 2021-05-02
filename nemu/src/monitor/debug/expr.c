@@ -303,7 +303,7 @@ static word_t eval(int start, int end){
 	else{	
 	  left_val = eval(start, mop_pos - 1);
 	  right_val = eval(mop_pos + 1, end);
-
+	  printf("L=%d, R=%d", left_val, right_val);
 	  switch(tokens[mop_pos].type){
 		  case '+': return left_val + right_val;
 		  case '-': return left_val - right_val;
