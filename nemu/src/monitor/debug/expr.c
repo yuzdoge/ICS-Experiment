@@ -312,6 +312,9 @@ static word_t eval(int start, int end){
 			if (right_val == 0)
 			  report_err("divide by zero\n"); 
 			return left_val / right_val;   
+		  case TK_EQ: return left_val == right_val;
+		  case TK_UNEQ: return left_val != right_val;
+		  case TK_AND: return left_val && right_val;
 		  default: assert(0);
 	  }
     }
