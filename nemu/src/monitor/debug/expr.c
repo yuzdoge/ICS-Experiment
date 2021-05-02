@@ -244,11 +244,8 @@ static inline int atoui(char c){
 }
 static inline word_t strtoui(char *str, int base_n){
   word_t val = 0;
-  for (int i = 0; str[i] != '\0'; i++){
-    printf("%c ", str[i]);	
+  for (int i = 0; str[i] != '\0'; i++)
     val = base_n*val + atoui(str[i]);
-  } 
-  printf("\n");
   return val;
 }
 
@@ -310,7 +307,6 @@ static word_t eval(int start, int end){
 	else{	
 	  left_val = eval(start, mop_pos - 1);
 	  right_val = eval(mop_pos + 1, end);
-	  printf("L=%d %c R=%d\n", left_val, tokens[mop_pos].type, right_val);
 	  switch(tokens[mop_pos].type){
 		  case '+': return left_val + right_val;
 		  case '-': return left_val - right_val;
