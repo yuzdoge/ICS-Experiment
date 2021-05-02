@@ -263,7 +263,6 @@ static word_t eval(int start, int end){
 
   word_t left_val, right_val;
   int mop_pos;
-  int temp;
   vaddr_t addr;
   if (start > end){
 	//for instance, `()` -> `` -> start > end
@@ -271,10 +270,7 @@ static word_t eval(int start, int end){
   } 
   else if (start == end){
     switch (tokens[start].type){
-      case TK_DIGIT: 
-		  temp = strtoui(tokens[start].str, 10); 
-		  printf("DIGIT=%d\n", temp);
-		  return temp;
+      case TK_DIGIT: return strtoui(tokens[start].str, 10); 
 	  case TK_HEX: return strtoui(tokens[start].str + 2, 16);
 	  case TK_REG: 
 	    left_val = isa_reg_str2val(tokens[start].str + 1, &error_flag);
