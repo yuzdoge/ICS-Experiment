@@ -115,7 +115,6 @@ static int cmd_x(char *args){
   free(temp);
   temp = strtok(NULL," ");
   args = temp + strlen(temp) + 1;
-  printf("%s\n", args);
   addr = (vaddr_t)(expr(args, &success));
   if (success){
 	//whether it need to check addr by myself?
