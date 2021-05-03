@@ -50,7 +50,7 @@ static int cmd_si(char *args){
 	  return 0;
 	}
 	if ((arg = strtok(NULL, " ")) != NULL){
-	  *(arg + strlen(arg)) = ' ';
+	  *(arg + strlen(arg)) = ' '; //substitute `\0` with ' '
 	  printf("Too much argument `%s`\n", arg);	
 	  return 0;
 	}
@@ -104,12 +104,21 @@ static int cmd_x(char *args){
   vaddr_t addr;
   vaddr_t end_addr;
   unsigned int n;
-  if (args == NULL)
+  bool success;
+  char *temp;
+  if (args == NULL || sscanf(args, "%u %ms", &n, &temp) != 2){
     printf("Try `help x` for more information\n");
-  else{
-	/*表达式求值*/
-	sscanf(args, "%u %x", &n, &addr);
-	/*whether it need to check addr by myself?*/
+    if (!args)
+	  free(temp);
+	return 0;
+  }
+  free(temp);
+  temp = strtok(NULL," ");
+  args = temp + strlen(temp) + 1;
+  printf("%s\n", args);
+  addr = (vaddr_t)(expr(args, &success));
+  if (success){
+	//whether it need to check addr by myself?
 	if (my_in_pmem(addr)){
 	  //printf("PMEM_SIZE = %#x, start_addr + Len * n = %#x\n", PMEM_SIZE, addr+Len*n); 
 	  end_addr = END_ADDR(addr, n);
