@@ -105,10 +105,10 @@ static int cmd_x(char *args){
   vaddr_t end_addr;
   unsigned int n;
   bool success;
-  char *temp;
+  char *temp = NULL;
   if (args == NULL || sscanf(args, "%u %ms", &n, &temp) != 2){
     printf("Try `help x` for more information\n");
-    if (args)
+    if (temp)
 	  free(temp);
 	return 0;
   }
@@ -137,12 +137,12 @@ static int cmd_x(char *args){
 
 
 static int cmd_p(char *args){
-  char *temp;
+  char *temp = NULL;
   word_t eval;
   bool success;
   if (args == NULL || sscanf(args, "%ms", &temp) == -1){
 	  printf("Try `help p` for more information\n");
-	  if (args != NULL)
+	  if (temp)
 		free(temp);
 	  return 0;
   }
