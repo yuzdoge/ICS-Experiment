@@ -108,7 +108,7 @@ static int cmd_x(char *args){
   char *temp;
   if (args == NULL || sscanf(args, "%u %ms", &n, &temp) != 2){
     printf("Try `help x` for more information\n");
-    if (!args)
+    if (args)
 	  free(temp);
 	return 0;
   }
