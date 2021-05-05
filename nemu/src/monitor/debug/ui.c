@@ -85,7 +85,7 @@ static int cmd_info(char *args){
 		goto ret;
 	  }
 	}
-	  printf("Unknown option `%s`\n", arg);
+	printf("Unknown option `%s`\n", arg);
   }	
 ret:
   free(arg);
