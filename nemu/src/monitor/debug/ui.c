@@ -73,22 +73,21 @@ static struct {
 
 static int cmd_info(char *args){
   char *arg = NULL;
-  int i;
-  if (args != NULL)
-	sscanf(args, "%ms", &arg);
-  if (arg == NULL)
-	printf("Try `help info` for more information\n");
-  else{
-	for (i = 0; i < NR_INFO; i++){
+  char *temp = NULL;
+  if ((arg = strtok(NULL, " "))){
+	if ((temp = strtok(NULL, " ")))
+		goto fail;
+	for (int i = 0; i < NR_INFO; i++){
 	  if (strcmp(arg, info_opt[i].name) == 0){
 		info_opt[i].handler();
-		goto ret;
+	    return 0;
 	  }
-	}
+    }
 	printf("Unknown option `%s`\n", arg);
+	return 0;
   }	
-ret:
-  free(arg);
+fail:
+  printf("Try `help info` for more information\n");
   return 0;
 }
 
