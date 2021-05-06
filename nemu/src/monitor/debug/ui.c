@@ -42,6 +42,7 @@ static int cmd_q(char *args) {
 
 static int cmd_si(char *args){
   char *arg; 
+  char *temp;
   unsigned long long n = 1;
   /*Only accept numeric argument, constant expression is not be allowed*/
   if (args && (arg = strtok(args, " "))){
@@ -49,16 +50,15 @@ static int cmd_si(char *args){
 	  printf("Argument %s is not numeric\n", arg);		
 	  return 0;
 	}
-	if ((arg = strtok(NULL, " ")) != NULL){
-	  *(arg + strlen(arg)) = ' '; //substitute `\0` with ' '
+	if ((arg = strtok(NULL, "")) != NULL && sscanf(arg, "%ms", &temp) != -1){
 	  printf("Too much argument `%s`\n", arg);	
+	  free(temp);
 	  return 0;
 	}
   }
   cpu_exec(n);
   return 0;
 }
-
 
 static int cmd_info(char *args);
 
