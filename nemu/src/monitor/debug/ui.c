@@ -183,11 +183,12 @@ static int cmd_w(char *args){
 	  return 0;
   }
   free(temp);
-
+  /*
   if (strstr(args, "$pc")){
 	printf("Fobidden watchpoint\n");
 	return 0;
   }
+  */
 
   eval = expr(args, &success);
   if (success){
