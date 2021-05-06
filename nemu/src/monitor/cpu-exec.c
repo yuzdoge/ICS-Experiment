@@ -99,7 +99,7 @@ void cpu_exec(uint64_t n) {
 	  assert(current->what);
       new_val = expr(current->what, &success);
 	  assert(success);
-	  if (new_val != current->val){ 
+	  if (nemu_state.state == NEMU_RUNNING && new_val != current->val){ 
 	    printf("\nWatchpoint %d: %s\n", current->NO, current->what);
 		printf("Old value = %u, " FMT_WORD "\n", current->val, current->val);
 		printf("New value = %u, " FMT_WORD "\n", new_val, new_val);
