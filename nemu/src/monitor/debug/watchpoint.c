@@ -1,5 +1,6 @@
 #include "watchpoint.h"
 #include "expr.h"
+#include <stdlib.h>
 
 #define NR_WP 32
 
@@ -32,6 +33,7 @@ static inline void element_exchange(WP **dest_list_p, WP **src_list_p){
 WP* new_wp(){
   Assert(free_, "resources of the watchpoint-pool run out\n");
   element_exchange(&head, &free_);
+  head->what = NULL;
   return head;
 }
 
@@ -40,6 +42,8 @@ void free_wp(int NO){
   WP **front = &head;
   for (; current; front = &(current->next), current = current->next)
     if (current->NO == NO){
+	  if (current->what)
+		free(current->what);
 	  element_exchange(&free_, front);
 	  return; 
 	}

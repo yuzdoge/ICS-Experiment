@@ -48,6 +48,9 @@ static int cmd_c(char *args) {
 
 
 static int cmd_q(char *args) {
+  WP* current = get_next_wp(NULL);
+  for (; current; current = get_next_wp(current)) 
+	free(current);
   return -1;
 }
 
@@ -181,6 +184,11 @@ static int cmd_w(char *args){
   }
   free(temp);
 
+  if (strstr(args, "$pc")){
+	printf("Fobidden watchpoint\n");
+	return 0;
+  }
+
   eval = expr(args, &success);
   if (success){
     WP* wp = new_wp();
@@ -204,8 +212,9 @@ static int cmd_d(char *args){
 	}
 	else if ((arg = strtok(NULL," ")))
       printf("Too much arguments\n");
-	else
-      free_wp(n); 	
+	else{
+      free_wp(n);
+    }	  
   }
   else
 	 printf("Try `help d` for more information\n");
