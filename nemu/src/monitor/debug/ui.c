@@ -72,6 +72,7 @@ static int cmd_si(char *args){
   return 0;
 }
 
+
 static int cmd_info(char *args);
 
 static struct {
@@ -125,6 +126,7 @@ static int cmd_x(char *args){
 	return 0;
   }
   free(temp);
+  
   temp = strtok(NULL," ");
   args = temp + strlen(temp) + 1;
   addr = (vaddr_t)(expr(args, &success));
@@ -158,11 +160,13 @@ static int cmd_p(char *args){
 	  return 0;
   }
   free(temp);
+
   eval = expr(args, &success);
   if (success)
   printf("eval=%d, %x\n", eval, eval);
   return 0;
 }
+
 
 static int cmd_w(char *args){
   static int seq = 0;
@@ -170,12 +174,13 @@ static int cmd_w(char *args){
   word_t eval;
   bool success;
   if (args == NULL || sscanf(args, "%ms", &temp) == -1){
-	  printf("Try `help p` for more information\n");
+	  printf("Try `help w` for more information\n");
 	  if (temp)
 		free(temp);
 	  return 0;
   }
   free(temp);
+
   eval = expr(args, &success);
   if (success){
     WP* wp = new_wp();
@@ -189,6 +194,24 @@ static int cmd_w(char *args){
  return 0;
 }
 
+
+static int cmd_d(char *args){
+  char *arg = NULL;
+  int n;
+  if ((arg = strtok(NULL, " "))){
+    if (sscanf(arg, "%d", &n) != 1){
+	  printf("Argument %s is not numeric\n", arg);		
+	}
+	else if ((arg = strtok(NULL," ")))
+      printf("Too much arguments\n");
+	else
+      free_wp(n); 	
+  }
+  else
+	 printf("Try `help d` for more information\n");
+
+  return 0;
+}
 
 static int cmd_help(char *args);
 
@@ -209,8 +232,9 @@ static struct {
 		 "\tUsage: x N EXPR\n"
 		 "\tEXPR is an expression indicating the start address to examine, N is the repeat count of 4 bytes", cmd_x },
   { "p", "exvaluate expression\n\tUsage: p EXPR\n\tEXPR is an expression", cmd_p}, 
-  { "w", "Set watchpoint and the program will be paused when the expression involved change\n"
+  { "w", "Set a watchpoint and the program will be paused when the expression involved change\n"
          "\tUsage: w EXPR\n\tEXPR is an expression", cmd_w },
+  { "d", "Delete the assigned watchpoint\n\tUsage: d N", cmd_d},
   /* TODO: Add more commands */
 
 };

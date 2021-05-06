@@ -47,6 +47,10 @@ void free_wp(int NO){
   printf("no watchpoint number %d\n", NO);
 }
 
+void wp_display(){
+ return;
+}
+
 WP* get_next_wp(WP *wp){ 
   if (wp == NULL)
 	return head;
