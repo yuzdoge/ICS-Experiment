@@ -10,6 +10,18 @@
 
 void cpu_exec(uint64_t);
 int is_batch_mode();
+void wp_display();
+
+void wp_display(){
+  WP *current = get_next_wp(NULL);
+  if (current == NULL){
+	printf("no watchpoints\n");
+	return;
+  }
+  printf("Num     " "what\n");
+  for (; current; current = get_next_wp(current))
+	printf("-%8d" "%s\n", current->NO, current->what);
+}
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -67,6 +79,7 @@ static struct {
   void (*handler)();
 } info_opt[] = {
   {"r", isa_reg_display},
+  {"w", wp_display},
 };
 
 #define NR_INFO (sizeof(info_opt) / sizeof(info_opt[0])) 
@@ -147,11 +160,33 @@ static int cmd_p(char *args){
   free(temp);
   eval = expr(args, &success);
   if (success)
-	printf("success\n");
-  else
-	printf("fail\n");
   printf("eval=%d, %x\n", eval, eval);
   return 0;
+}
+
+static int cmd_w(char *args){
+  static int seq = 0;
+  char *temp = NULL;
+  word_t eval;
+  bool success;
+  if (args == NULL || sscanf(args, "%ms", &temp) == -1){
+	  printf("Try `help p` for more information\n");
+	  if (temp)
+		free(temp);
+	  return 0;
+  }
+  free(temp);
+  eval = expr(args, &success);
+  if (success){
+    WP* wp = new_wp();
+    wp->NO = seq++;	
+	wp->val = eval;
+	wp->what = (char*)malloc(strlen(args) + 1);
+	assert(wp->what);
+	strcpy(wp->what, args);
+	printf("watchpoint %d: %s\n", wp->NO, wp->what);
+  }
+ return 0;
 }
 
 
@@ -174,6 +209,8 @@ static struct {
 		 "\tUsage: x N EXPR\n"
 		 "\tEXPR is an expression indicating the start address to examine, N is the repeat count of 4 bytes", cmd_x },
   { "p", "exvaluate expression\n\tUsage: p EXPR\n\tEXPR is an expression", cmd_p}, 
+  { "w", "Set watchpoint and the program will be paused when the expression involved change\n"
+         "\tUsage: w EXPR\n\tEXPR is an expression", cmd_w },
   /* TODO: Add more commands */
 
 };

@@ -30,11 +30,8 @@ static inline void element_exchange(WP **dest_list_p, WP **src_list_p){
 } 
 
 WP* new_wp(){
-  static int seq = 0;
   Assert(free_, "resources of the watchpoint-pool run out\n");
   element_exchange(&head, &free_);
-  head->NO = seq; 
-  seq++;
   return head;
 }
 
@@ -48,10 +45,6 @@ void free_wp(int NO){
 	}
   
   printf("no watchpoint number %d\n", NO);
-}
-
-void wp_display(){
- return;
 }
 
 WP* get_next_wp(WP *wp){ 
