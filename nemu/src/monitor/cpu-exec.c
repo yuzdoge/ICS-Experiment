@@ -3,7 +3,7 @@
 #include <monitor/difftest.h>
 #include <stdlib.h>
 #include <sys/time.h>
-
+#include "debug/watchpoint.h"
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
  * This is useful when you use the `si' command.
@@ -88,7 +88,28 @@ void cpu_exec(uint64_t n) {
 #ifdef DEBUG
     asm_print(this_pc, seq_pc - this_pc, n < MAX_INSTR_TO_PRINT);
 
-    /* TODO: check watchpoints here. */
+	/* TODO: check watchpoints here. */
+	//extern WP* get_next_wp(WP *wp);	
+	extern word_t expr(char *args, bool* success);
+    
+	bool success;
+	word_t new_val;
+	WP* current = get_next_wp(NULL);
+	for (; current; current = get_next_wp(current)){
+	  assert(current->what);
+      new_val = expr(current->what, &success);
+	  assert(success);
+	  if (new_val != current->val){ 
+	    printf("\nWatchpoint %d: %s\n", current->NO, current->what);
+		printf("Old value = %u, " FMT_WORD "\n", current->val, current->val);
+		printf("New value = %u, " FMT_WORD "\n", new_val, current->val);
+		current->val = new_val;
+	    nemu_state.state = NEMU_STOP;
+		printf("Trigger at pc = " FMT_WORD "\n" "Present pc = " FMT_WORD "\n", 
+				nemu_state.halt_pc, seq_pc);
+	  }
+	}
+
 #endif
 
 #ifdef HAS_IOE
