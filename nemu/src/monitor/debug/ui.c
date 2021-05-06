@@ -20,7 +20,7 @@ void wp_display(){
   }
   printf("Num     " "what\n");
   for (; current; current = get_next_wp(current))
-	printf("-%8d" "%s\n", current->NO, current->what);
+	printf("%8d-" "%s\n", current->NO, current->what);
 }
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
