@@ -102,11 +102,10 @@ void cpu_exec(uint64_t n) {
 	  if (new_val != current->val){ 
 	    printf("\nWatchpoint %d: %s\n", current->NO, current->what);
 		printf("Old value = %u, " FMT_WORD "\n", current->val, current->val);
-		printf("New value = %u, " FMT_WORD "\n", new_val, current->val);
+		printf("New value = %u, " FMT_WORD "\n", new_val, new_val);
 		current->val = new_val;
 	    nemu_state.state = NEMU_STOP;
-		printf("Trigger at pc = " FMT_WORD "\n" "Present pc = " FMT_WORD "\n", 
-				nemu_state.halt_pc, seq_pc);
+		printf("Present pc = " FMT_WORD "\n", seq_pc);
 	  }
 	}
 
