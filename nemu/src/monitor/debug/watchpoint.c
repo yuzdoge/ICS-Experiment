@@ -37,16 +37,15 @@ WP* new_wp(){
 
 void free_wp(int NO){
   WP *current = head;
-  WP *front = current;
-  for (; current; front = current, current = current->next)
+  WP **front = &head;
+  for (; current; front = &(current->next), current = current->next)
     if (current->NO == NO){
-	  element_exchange(&free_, &front);
+	  element_exchange(&free_, front);
 	  return; 
 	}
   
   printf("no watchpoint number %d\n", NO);
 }
-
 
 WP* get_next_wp(WP *wp){ 
   if (wp == NULL)
