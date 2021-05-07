@@ -11,8 +11,7 @@ int main(int argc, char *argv[]) {
 #ifdef TEST_EXPR
 #define BUFSIZE (100 + 20) 
 	char buf[BUFSIZE];
-	FILE *fp = fopen("src/input", "r");
-	perror("Open error");
+	FILE *fp = fopen("tools/gen-expr/input", "r");
 	assert(fp);
 	while (fgets(buf, BUFSIZE, fp)){
 	  buf[strlen(buf) - 1] = '\0'; 
