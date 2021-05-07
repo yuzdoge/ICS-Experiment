@@ -7,7 +7,7 @@
  */
 #include <regex.h>
 
-#define MAX_TOKENS 32 
+#define MAX_TOKENS 100 
 enum {
   TK_NOTYPE = 256, TK_DIGIT, TK_DEREF, TK_HEX, TK_REG,
   TK_UNEQ = 271, TK_EQ, TK_AND, 
@@ -70,7 +70,7 @@ void init_regex() {
 
 typedef struct token {
   int type;
-  char str[32];
+  char str[100];
 } Token;
 
 static Token tokens[MAX_TOKENS] __attribute__((used)) = {};
