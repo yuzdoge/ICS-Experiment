@@ -12,6 +12,7 @@ int main(int argc, char *argv[]) {
 #define BUFSIZE (100 + 20) 
 	char buf[BUFSIZE];
 	FILE *fp = fopen("~/ics2020/nemu/tools/gen-expr/input", "r");
+	perror("Open error");
 	assert(fp);
 	while (fgets(buf, BUFSIZE, fp)){
 	  buf[strlen(buf) - 1] = '\0'; 
