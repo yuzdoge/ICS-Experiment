@@ -33,8 +33,8 @@ static struct rule {
    */
 
   {" +", TK_NOTYPE},				// spaces
-  {"0[xX][[:xdigit:]]+", TK_HEX},		// hexadecimal digit, it must precede decimal digit to be checked. 
-  {"[[:digit:]]+", TK_DIGIT},		// decimal digit
+  {"0[xX][[:xdigit:]]+[uU]?", TK_HEX},		// hexadecimal digit, it must precede decimal digit to be checked. 
+  {"[[:digit:]]+[uU]?", TK_DIGIT},		// decimal digit
   {"\\+", '+'},						// plus
   {"-", '-'},						// minus
   {"\\*", '*'},						// multiply
@@ -118,7 +118,10 @@ static bool make_token(char *e) {
 				return false;
 			}
 			memcpy(tokens[nr_token].str, substr_start, substr_len);
-			tokens[nr_token].str[substr_len] = '\0';
+			if (rules[i].token_type != TK_REG && (tokens[nr_token].str[substr_len - 1] & 0b11011111)== 'U')
+			  tokens[nr_token].str[substr_len - 1] = '\0'; //drop the unsigend marks- 'u' or 'U'
+			else
+			  tokens[nr_token].str[substr_len] = '\0';
 			tokens[nr_token++].type = rules[i].token_type;
 			break;
 		  case TK_NOTYPE: break;
