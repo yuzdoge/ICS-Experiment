@@ -96,10 +96,10 @@ static bool make_token(char *e) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
 
-		/*
+		
         Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
             i, rules[i].regex, position, substr_len, substr_len, substr_start);
-		*/
+		
         position += substr_len;
 
         /* TODO: Now a new token is recognized with rules[i]. Add codes
@@ -250,6 +250,7 @@ static inline word_t strtoui(char *str, int base_n){
   word_t val = 0;
   for (int i = 0; str[i] != '\0'; i++)
     val = base_n*val + atoui(str[i]);
+  printf("%u\n", val);
   return val;
 }
 
@@ -309,8 +310,9 @@ static word_t eval(int start, int end){
 		  case '-': return left_val - right_val;
 		  case '*': return left_val * right_val;
 		  case '/': 
-			if (right_val == 0)
-			  report_err("divide by zero\n"); 
+			if (right_val == 0){
+			  report_err("divide by zero: at  %d\n", mop_pos); 
+			}
 			return left_val / right_val;   
 		  case TK_EQ: return left_val == right_val;
 		  case TK_UNEQ: return left_val != right_val;
