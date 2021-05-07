@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
 	  sscanf(arg,"%u", &val);
 	  arg = strtok(NULL, "");
 	  eval = expr(arg, &success);
-	  assert(success);
+	  //assert(success);
 	  if (val != eval){
 	    printf("EXPR %d error: val=%u  eval=%u\n""%s\n", i, val, eval, arg);
 		//assert(0);
