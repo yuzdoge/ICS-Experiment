@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
 	word_t eval, val;
 	bool success;
 	char *arg;
-	int i = 0;
+	int i = 1;
 	FILE *fp = fopen("tools/gen-expr/input", "r");
 	assert(fp);
 	while (fgets(buf, BUFSIZE, fp)){
