@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
   init_monitor(argc, argv);
 #ifdef TEST_EXPR
-#define BUFSIZE (100 + 20) 
+#define BUFSIZE (65536 + 20) 
 	char buf[BUFSIZE];
 	word_t eval, val;
 	bool success;

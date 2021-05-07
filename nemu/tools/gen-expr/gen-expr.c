@@ -8,11 +8,11 @@
 #define bool _Bool
 #define true 1
 #define false 0
-#define BUFF 100 
+#define BUFF 65536 
 
 // this should be enough
 static char buf[BUFF] = {}; // static type, by default, initialize to '\0'.
-static char code_buf[BUFF + 128] = {}; // a little larger than `buf`
+static char code_buf[65536 + 128] = {}; // a little larger than `buf`
 static char *code_format =
 "#include <stdio.h>\n"
 "int main() { "
@@ -123,7 +123,7 @@ tag:
     int match = fscanf(fp, "%d", &result);
     pclose(fp);
     if (match != 1){
-	   printf("divide:%u %s\n", result, buf);
+	   //printf("divide:%u %s\n", result, buf);
 	   goto tag;	
 	}
     printf("%u %s\n", result, buf);
