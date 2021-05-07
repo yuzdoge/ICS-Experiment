@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
 #ifdef TEST_EXPR
 #define BUFSIZE (100 + 20) 
 	char buf[BUFSIZE];
-	FILE *fp = fopen("input", "r");
+	FILE *fp = fopen("/home/saber/ics2020/nemu/src/input", "r");
 	perror("Open error");
 	assert(fp);
 	while (fgets(buf, BUFSIZE, fp)){
