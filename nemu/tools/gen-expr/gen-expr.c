@@ -29,8 +29,8 @@ static inline uint32_t choose(uint32_t n){
 }
 static inline bool gen_num(){
   uint32_t num = choose(-1);  
-  char num_str[12];  
-  sprintf(num_str, "%u", num);
+  char num_str[13];  
+  sprintf(num_str, "%uu", num);
   int n = strlen(num_str);
   if (rest_buf(current) >= n){  
 	for (int i = 0; i < n; i++)
@@ -123,7 +123,7 @@ tag:
     int match = fscanf(fp, "%d", &result);
     pclose(fp);
     if (match != 1){
-	   printf("divide:%u %s\n", result, buf);
+	   //printf("divide:%u %s\n", result, buf);
 	   goto tag;	
 	}
     printf("%u %s\n", result, buf);

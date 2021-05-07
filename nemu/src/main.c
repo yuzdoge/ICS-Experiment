@@ -2,7 +2,7 @@ void init_monitor(int, char *[]);
 void engine_start();
 int is_exit_status_bad();
 
-//#define TEST_EXPR
+#define TEST_EXPR
 #include "monitor/debug/expr.h"  
 
 int main(int argc, char *argv[]) {
