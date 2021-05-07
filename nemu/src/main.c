@@ -2,7 +2,7 @@ void init_monitor(int, char *[]);
 void engine_start();
 int is_exit_status_bad();
 
-//#define TEST_EXPR
+#define TEST_EXPR
 #include "monitor/debug/expr.h"  
 
 int main(int argc, char *argv[]) {
@@ -23,7 +23,6 @@ int main(int argc, char *argv[]) {
 	  sscanf(arg,"%u", &val);
 	  arg = strtok(NULL, "");
 	  eval = expr(arg, &success);
-	  assert(success);
 	  if (val != eval){
 	    printf("EXPR %d error: val=%u  eval=%u\n""%s\n", i, val, eval, arg);
 		assert(0);
