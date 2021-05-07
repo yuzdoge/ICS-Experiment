@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
 	  eval = expr(arg, &success);
 	  assert(success);
 	  if (val != eval){
-	    printf("EXPR %d error: val=%d  eval=%d\n""%s\n", i, val, eval, arg);
+	    printf("EXPR %d error: val=%u  eval=%u\n""%s\n", i, val, eval, arg);
 		assert(0);
 	  }
 	  else
