@@ -123,7 +123,7 @@ tag:
     int match = fscanf(fp, "%d", &result);
     pclose(fp);
     if (match != 1){
-	   //printf("divide:%u %s\n", result, buf);
+	   printf("divide:%u %s\n", result, buf);
 	   goto tag;	
 	}
     printf("%u %s\n", result, buf);
