@@ -70,7 +70,7 @@ void init_regex() {
 
 typedef struct token {
   int type;
-  char str[65536];
+  char str[32];
 } Token;
 
 static Token tokens[MAX_TOKENS] __attribute__((used)) = {};
