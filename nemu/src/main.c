@@ -11,11 +11,23 @@ int main(int argc, char *argv[]) {
 #ifdef TEST_EXPR
 #define BUFSIZE (100 + 20) 
 	char buf[BUFSIZE];
+	word_t eval, val;
+	bool success;
+	char *arg;
+	int i = 0;
 	FILE *fp = fopen("tools/gen-expr/input", "r");
 	assert(fp);
 	while (fgets(buf, BUFSIZE, fp)){
 	  buf[strlen(buf) - 1] = '\0'; 
-	  printf("%s\n", buf);
+	  arg = strtok(buf," ");
+	  sscanf(arg,"%u", &val);
+	  arg = strtok(NULL, "");
+	  eval = expr(arg, &success);
+	  assert(success);
+	  if (val != eval){
+	    printf("%d: val=%d  eval=%d\n""%s\n", i, val, eval, arg);
+		assert(0);
+	  }
 	}
 	fclose(fp);
 #else
