@@ -2,12 +2,13 @@ void init_monitor(int, char *[]);
 void engine_start();
 int is_exit_status_bad();
 
-#define TEST_EXPR
-#include "monitor/debug/expr.h"  
+//#define TEST_EXPR
+//#include "monitor/debug/expr.h"  
 
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
   init_monitor(argc, argv);
+
 #ifdef TEST_EXPR
 #define BUFSIZE (65536 + 20) 
 	char buf[BUFSIZE];
@@ -33,6 +34,7 @@ int main(int argc, char *argv[]) {
 	  i++;
 	}
 	fclose(fp);
+
 #else
   /* Start engine. */
   engine_start();
