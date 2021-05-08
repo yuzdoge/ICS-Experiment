@@ -118,10 +118,7 @@ static bool make_token(char *e) {
 				return false;
 			}
 			memcpy(tokens[nr_token].str, substr_start, substr_len);
-			if (rules[i].token_type != TK_REG && (tokens[nr_token].str[substr_len - 1] & 0b11011111)== 'U')
-			  tokens[nr_token].str[substr_len - 1] = '\0'; //drop the unsigend marks- 'u' or 'U'
-			else
-			  tokens[nr_token].str[substr_len] = '\0';
+			tokens[nr_token].str[substr_len] = '\0';
 			tokens[nr_token++].type = rules[i].token_type;
 			break;
 		  case TK_NOTYPE: break;
@@ -243,17 +240,6 @@ static int find_mainop(int start, int end){
    
 }
 
-static inline int atoui(char c){
-  return c <= '9'? (c - '0'): ((c&0b11011111) - '7');  
-}
-static inline word_t strtoui(char *str, int base_n){
-  word_t val = 0;
-  for (int i = 0; str[i] != '\0'; i++)
-    val = base_n*val + atoui(str[i]);
-  //printf("%u\n", val);
-  return val;
-}
-
 static bool error_flag; 
 #define report_err(...) \
   do { \
@@ -275,8 +261,12 @@ static word_t eval(int start, int end){
   } 
   else if (start == end){
     switch (tokens[start].type){
-      case TK_DIGIT: return strtoui(tokens[start].str, 10); 
-	  case TK_HEX: return strtoui(tokens[start].str + 2, 16);
+      case TK_DIGIT:
+		sscanf(tokens[start].str, "%u", &left_val);
+	    return left_val;	
+	  case TK_HEX: 
+		sscanf(tokens[start].str, "%x", &left_val);
+	    return left_val;	
 	  case TK_REG: 
 	    left_val = isa_reg_str2val(tokens[start].str + 1, &error_flag);
         if (error_flag == true) 
@@ -310,7 +300,7 @@ static word_t eval(int start, int end){
 		  case '-': return left_val - right_val;
 		  case '*': return left_val * right_val;
 		  case '/': 
-			if (right_val == 0){
+			if (error_flag && right_val == 0){
 			  report_err("divide by zero: at  %d\n", mop_pos); 
 			}
 			return left_val / right_val;   
