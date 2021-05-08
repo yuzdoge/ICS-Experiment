@@ -300,8 +300,11 @@ static word_t eval(int start, int end){
 		  case '-': return left_val - right_val;
 		  case '*': return left_val * right_val;
 		  case '/': 
-			if (error_flag && right_val == 0){
-			  report_err("divide by zero: at  %d\n", mop_pos); 
+			if (right_val == 0){
+			  if (error_flag)
+			    report_err("divide by zero: at  %d\n", mop_pos); 
+			  else
+				return 0;
 			}
 			return left_val / right_val;   
 		  case TK_EQ: return left_val == right_val;
