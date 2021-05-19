@@ -78,14 +78,16 @@ $(OBJ_DIR)/%.o: src/%.c
 	@echo + CC $<
 	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) $(SO_CFLAGS) -c -o $@ $<
-
+	@$(CC) $(CFLAGS) $(SO_CFLAGS) -E -MF /dev/null $< | \
+	      grep -ve '^#' | \
+		  clang-format - > $(basename $@).i
 
 # Depencies
 -include $(OBJS:.o=.d)
 
 # Some convenient rules
 
-.PHONY: app run gdb clean run-env $(DIFF_REF_SO)
+.PHONY: app run gdb clean run-env $(DIFF_REF_SO) count
 app: $(BINARY)
 
 override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
@@ -118,3 +120,11 @@ clean:
 	$(MAKE) -C tools/gen-expr clean
 	$(MAKE) -C tools/qemu-diff clean
 	$(MAKE) -C tools/kvm-diff clean
+
+
+PA0_ACTUAL_LINES = 4213
+PAN_ACTUAL_LINES = $(shell find . -name "*.[ch]" | xargs grep -v '^$$' | wc -l) 
+
+count:
+	$(shell echo $(PA0_ACTUAL_LINES) $(PAN_ACTUAL_LINES) | awk '{printf "actual=%d  diff=%d\n", $$2, $$2-$$1}')
+
