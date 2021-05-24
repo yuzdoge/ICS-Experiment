@@ -8,15 +8,38 @@ static inline void set_width(DecodeExecState *s, int width) {
 
 static inline def_EHelper(load) {
   switch (s->isa.instr.i.funct3) {
-    EXW  (2, ld, 4)
+	EXW  (0b000, lds, 1)
+	EXW  (0b001, lds, 2)
+
+    EXW  (0b010, ld, 4)
+	EXW  (0b100, ld, 1)
+	EXW  (0b101, ld, 2)
     default: exec_inv(s);
   }
 }
 
 static inline def_EHelper(store) {
   switch (s->isa.instr.s.funct3) {
-    EXW  (2, st, 4)
+	EXW  (0b000, st, 1)
+	EXW  (0b001, st, 2)
+    EXW  (0b010, st, 4)
     default: exec_inv(s);
+  }
+}
+
+static inline def_EHelper(op_imm){
+  switch (s->isa.instr.i.funct3){
+    EX  (0b000, addi)
+    /*
+	EX  (0b010, slti)
+	EX  (0b011, sltu)
+	EX  (0b100, xori)
+	EX  (0b110, ori)
+	EX  (0b111, andi)
+	
+	EX  (0b001, slli)
+	EX  (0b101, srlair) //logical or arithematic
+	*/
   }
 }
 
@@ -26,6 +49,7 @@ static inline void fetch_decode_exec(DecodeExecState *s) {
   assert(s->isa.instr.i.opcode1_0 == 0x3);
   switch (s->isa.instr.i.opcode6_2) {
     IDEX (0b00000, I, load)
+	IDEX (0b00100, I, op_imm)
     IDEX (0b01000, S, store)
     IDEX (0b01101, U, lui)
     EX   (0b11010, nemu_trap)
