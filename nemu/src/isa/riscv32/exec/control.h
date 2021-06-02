@@ -2,6 +2,7 @@
 static inline def_EHelper(jal){
   rtl_j(s, (cpu.pc + id_src1->imm));
   rtl_li(s, ddest, s->seq_pc);
+  print_Dop(id_src1->str, OP_STR_SIZE, FMT_WORD, cpu.pc + id_src1->imm);
   print_asm_template2(jal); //jal rd,imm
 } 
 
