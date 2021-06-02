@@ -72,6 +72,7 @@ static inline def_EHelper(branch){
 
 static inline void fetch_decode_exec(DecodeExecState *s) {
   s->isa.instr.val = instr_fetch(&s->seq_pc, 4); 
+  printf("%0x\n", s->isa.instr.val);
   assert(s->isa.instr.i.opcode1_0 == 0x3);
   switch (s->isa.instr.i.opcode6_2) {
     IDEX (0b00000, I, load)
