@@ -132,7 +132,7 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 	}
 	else {
       pchr = convt(out, &cur, pchr, ap);
-	  va_arg(ap, int);
+	  va_end(ap);
 	  if (pchr == NULL) return -1; 
 	}
   }
