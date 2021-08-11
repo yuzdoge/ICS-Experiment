@@ -84,13 +84,7 @@ static const char* parse(Convtspec* ptr, const char *p)  {
 
 
 #define CONVTF(buf, var, i) convt ## i (buf, cur, csf, var)
-#define CASE(tp, i, type) \
-do{ \
-  if (tp == i) { \
-    type var = va_arg(ap, type); \
-    CONVTF(buf, var, i); \
-  } \
-}while(0); 
+#define CASE(i, type) case i: CONVTF(buf, va_arg(ap, type), i); break; 
 
 static inline void convtint_t(char *buf, size_t* cur, Convtspec cs, int var) {
   /*TODO*/
@@ -115,9 +109,10 @@ static const char* convt(char *buf, size_t* cur, const char* pchr, va_list ap) {
       buf[(*cur)++] = *pchr;   
   }
   else {
-    int tp = type(csf.lm, csf.cs);
-    CASE(tp, int_t, int) 	
-//	CASE(tp, str_t, char*)
+    switch (type(csf.lm, csf.cs)) {
+      CASE(int_t, int) 	
+//	  CASE(str_t, char*)
+	}
   }
   return npchr;
 }
