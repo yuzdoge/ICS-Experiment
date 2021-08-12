@@ -116,7 +116,7 @@ static const char* convt(char *buf, size_t* cur, const char* pchr, va_list* ap) 
   else {
     switch (type(csf.lm, csf.cs)) {
       CASE(int_t, int) 	
-//	  CASE(str_t, char*)
+	  CASE(str_t, char*)
 	}
   }
   return npchr;
