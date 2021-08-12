@@ -87,11 +87,16 @@ static const char* parse(Convtspec* ptr, const char *p)  {
 #define CASE(i, type) case i: CONVTF(buf, va_arg(*ap, type), i); break; 
 
 static inline void convtint_t(char *buf, size_t* cur, Convtspec cs, int var) {
-  /*TODO*/
+  /*TODO:flag precision and son on...*/
   if (var < 0) { buf[(*cur)++] = '-'; var = -var; }
   int cnt = 0; char num[20];
   do { num[cnt++] = var % 10 + '0'; var /= 10; } while (var != 0);
   while (cnt--) buf[(*cur)++] = num[cnt]; 
+}
+
+static inline void convtstr_t(char *buf, size_t* cur, Convtspec cs, char* var) {
+  /*TODO*/ 
+  for (; *var != '\0'; var++) buf[(*cur)++] = *var;
 }
 
 static const char* convt(char *buf, size_t* cur, const char* pchr, va_list* ap) {
