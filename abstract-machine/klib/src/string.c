@@ -64,6 +64,7 @@ void* memmove(void* dst,const void* src,size_t n) {
 }
 
 void* memcpy(void* out, const void* in, size_t n) {
+  for (size_t i = 0; i < n; i++) ((char *)out)[i] = ((char *)in)[i];
   return NULL;
 }
 

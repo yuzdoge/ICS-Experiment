@@ -136,7 +136,8 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 	  pchr++; 
 	}
 	else {
-      pchr = convt(out, &cur, pchr, &ap);
+	  va_list* aq= (va_list *)(&ap);
+      pchr = convt(out, &cur, pchr, aq);
 	  if (pchr == NULL) return -1; 
 	}
   }
