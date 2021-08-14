@@ -5,7 +5,7 @@
 
 size_t strlen(const char *s) {
   size_t cnt = 0;
-  while (*s) cnt++; 
+  while (s[cnt] != '\0') cnt++;
   return cnt;
 }
 
