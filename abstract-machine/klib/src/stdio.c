@@ -84,7 +84,7 @@ static const char* parse(Convtspec* ptr, const char *p)  {
 
 
 #define CONVTF(buf, var, i) convt ## i (buf, cur, csf, var)
-#define CASE(i, type) case i: CONVTF(buf, va_arg(*ap, type), i); break; 
+#define CASE(i, type) case i: CONVTF(buf, va_arg(ap, type), i); break; 
 
 static inline void convtint_t(char *buf, size_t* cur, Convtspec cs, int var) {
   /*TODO:flag precision and son on...*/
@@ -99,7 +99,7 @@ static inline void convtstr_t(char *buf, size_t* cur, Convtspec cs, char* var) {
   for (; *var != '\0'; var++) buf[(*cur)++] = *var;
 }
 
-static const char* convt(char *buf, size_t* cur, const char* pchr, va_list* ap) {
+static const char* convt(char *buf, size_t* cur, const char* pchr, va_list ap) {
   Convtspec csf;
   csfinit(&csf);
   const char* npchr = pchr + 1;
@@ -136,8 +136,8 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 	  pchr++; 
 	}
 	else {
-	  va_list* aq= (va_list *)(&ap);
-      pchr = convt(out, &cur, pchr, aq);
+//	  va_list* aq= (va_list *)(&ap);
+      pchr = convt(out, &cur, pchr, ap); //mark
 	  if (pchr == NULL) return -1; 
 	}
   }
