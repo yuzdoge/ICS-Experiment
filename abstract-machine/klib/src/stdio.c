@@ -130,17 +130,20 @@ int printf(const char *fmt, ...) {
 int vsprintf(char *out, const char *fmt, va_list ap) {
   size_t cur = 0;
   const char* pchr = fmt;
+  va_list aq; 
+  va_copy(aq, ap);
+
   while (*pchr != '\0') { 
     if (*pchr != '%') { 
       out[cur++] = *pchr; 
 	  pchr++; 
 	}
 	else {
-	  va_list* aq= (va_list *)(&ap);
-      pchr = convt(out, &cur, pchr, aq); 
+	        pchr = convt(out, &cur, pchr, &aq); 
 	  if (pchr == NULL) return -1; 
 	}
   }
+  va_end(aq);
   out[cur] = '\0';
   return cur;
 }
