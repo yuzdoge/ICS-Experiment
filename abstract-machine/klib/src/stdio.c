@@ -88,9 +88,10 @@ static const char* parse(Convtspec* ptr, const char *p)  {
 
 static inline void convtint_t(char *buf, size_t* cur, Convtspec cs, int var) {
   /*TODO:flag precision and son on...*/
-  if (var < 0) { buf[(*cur)++] = '-'; var = -var; }
+  int sign = 1;
+  if (var < 0) { buf[(*cur)++] = '-'; sign = -1; }
   int cnt = 0; char num[20];
-  do { num[cnt++] = var % 10 + '0'; var /= 10; } while (var != 0);
+  do { num[cnt++] = sign * (var % 10) + '0'; var /= 10; } while (var != 0);
   while (cnt--) buf[(*cur)++] = num[cnt]; 
 }
 
