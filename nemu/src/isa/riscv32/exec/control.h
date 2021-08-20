@@ -1,3 +1,4 @@
+#include <monitor/difftest.h>
 //J-Type
 static inline def_EHelper(jal){
   rtl_j(s, (cpu.pc + id_src1->imm));
@@ -8,7 +9,7 @@ static inline def_EHelper(jal){
 
 //I-Type
 static inline def_EHelper(jalr){
-  //difftest_skip_dut(1, 2); //calibrate the dut
+  difftest_skip_dut(1, 2); //calibrate the dut
   switch (s->isa.instr.i.funct3){
     case 0b000:
 	  rtl_addi(s, s0, dsrc1, id_src2->imm);
