@@ -137,12 +137,7 @@ static const char* convt(char *buf, size_t* cur, const char* pchr, va_list* ap, 
   return npchr;
 }
 
-
-int printf(const char *fmt, ...) {
-  return 0;
-}
-
-int vsprintf(char *out, const char *fmt, va_list ap) {
+int comprintf(char *out, const char *fmt, va_list ap, const int has_buf) {
   size_t cur = 0;
   const char* pchr = fmt;
   va_list aq; 
@@ -151,25 +146,40 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
   while (*pchr != '\0') { 
     if (*pchr != '%') { 
 //      out[cur++] = *pchr; 
-	  pushchr(out, cur, *pchr, 1); cur++;
+	  pushchr(out, cur, *pchr, has_buf); cur++;
 	  pchr++; 
 	}
 	else {
-	  pchr = convt(out, &cur, pchr, &aq, 1); 
+	  pchr = convt(out, &cur, pchr, &aq, has_buf); 
 	  if (pchr == NULL) return -1; 
 	}
   }
   va_end(aq);
 //  out[cur] = '\0';
-  pushchr(out, cur, '\0', 1);
+  pushchr(out, cur, '\0', has_buf);
   return cur;
+
+}
+
+
+int printf(const char *fmt, ...) {
+  size_t cnt = 0;
+  va_list ap;
+  va_start(ap, fmt);
+  cnt = comprintf(NULL, fmt, ap, 0);
+  va_end(ap);
+  return cnt;
+}
+
+int vsprintf(char *out, const char *fmt, va_list ap) {
+  return comprintf(out, fmt, ap, 1);
 }
 
 int sprintf(char *out, const char *fmt, ...) {
   va_list ap;
   int cnt;
   va_start(ap, fmt);
-  cnt = vsprintf(out, fmt, ap);
+  cnt = comprintf(out, fmt, ap, 1);
   va_end(ap);
   return cnt;
 }
