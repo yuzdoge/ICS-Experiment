@@ -7,6 +7,8 @@
 
 #define MAXF 7
 
+#define pushchr(buf, cur, chr, has_buf) { if (has_buf) (buf)[cur] = chr; else putch(chr); }
+
 #define type(lm, cs) (lm * 256 + cs)
 enum {F_POUND = 0, F_ZERO, F_DASH, F_SPACE, F_PLUS, F_SQUOT, F_I};
 enum {L_DH = 256 + 'h', L_DL = 256 + 'l'};
@@ -83,36 +85,48 @@ static const char* parse(Convtspec* ptr, const char *p)  {
 }
 
 
-#define CONVTF(buf, var, i) convt ## i (buf, cur, csf, var)
-#define CASE(i, type) case i: CONVTF(buf, va_arg(*ap, type), i); break; 
+#define CONVTF(var, i) convt ## i (buf, cur, csf, var, has_buf)
+#define CASE(i, type) case i: CONVTF(va_arg(*ap, type), i); break; 
 
-static inline void convtint_t(char *buf, size_t* cur, Convtspec cs, int var) {
+static inline void convtint_t(char *buf, size_t* cur, Convtspec cs, int var, int has_buf) {
   /*TODO:flag precision and son on...*/
   int sign = 1;
-  if (var < 0) { buf[(*cur)++] = '-'; sign = -1; }
+  if (var < 0) { 
+//   buf[(*cur)++] = '-'; 
+    pushchr(buf, *cur, '-', has_buf); (*cur)++;
+    sign = -1; 
+  }
   int cnt = 0; char num[20];
   do { num[cnt++] = sign * (var % 10) + '0'; var /= 10; } while (var != 0);
-  while (cnt--) buf[(*cur)++] = num[cnt]; 
+  while (cnt--) { 
+//    buf[(*cur)++] = num[cnt]; 
+    pushchr(buf, *cur, num[cnt], has_buf); (*cur)++;
+  }
 }
 
-static inline void convtstr_t(char *buf, size_t* cur, Convtspec cs, char* var) {
+static inline void convtstr_t(char *buf, size_t* cur, Convtspec cs, char* var, int has_buf) {
   /*TODO*/ 
-  for (; *var != '\0'; var++) buf[(*cur)++] = *var;
+  for (; *var != '\0'; var++) { 
+//    buf[(*cur)++] = *var;
+    pushchr(buf, *cur, *var, has_buf); (*cur)++;
+  }
 }
 
-static const char* convt(char *buf, size_t* cur, const char* pchr, va_list* ap) {
+static const char* convt(char *buf, size_t* cur, const char* pchr, va_list* ap, int has_buf) {
   Convtspec csf;
   csfinit(&csf);
   const char* npchr = pchr + 1;
   if (*(npchr) == '\0') { 
-    buf[(*cur)++] = '\0'; 
+//    buf[(*cur)++] = '\0'; 
+    pushchr(buf, *cur, '\0', has_buf); (*cur)++;
 	return NULL;
   }
 
   npchr = parse(&csf, npchr);
   if (csf.cs == 0) {
     for (; pchr < npchr; pchr++) 
-      buf[(*cur)++] = *pchr;   
+//      buf[(*cur)++] = *pchr;   
+	  pushchr(buf, *cur, *pchr, has_buf); (*cur)++;
   }
   else {
     switch (type(csf.lm, csf.cs)) {
@@ -136,16 +150,18 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 
   while (*pchr != '\0') { 
     if (*pchr != '%') { 
-      out[cur++] = *pchr; 
+//      out[cur++] = *pchr; 
+	  pushchr(out, cur, *pchr, 1); cur++;
 	  pchr++; 
 	}
 	else {
-	        pchr = convt(out, &cur, pchr, &aq); 
+	  pchr = convt(out, &cur, pchr, &aq, 1); 
 	  if (pchr == NULL) return -1; 
 	}
   }
   va_end(aq);
-  out[cur] = '\0';
+//  out[cur] = '\0';
+  pushchr(out, cur, '\0', 1);
   return cur;
 }
 
