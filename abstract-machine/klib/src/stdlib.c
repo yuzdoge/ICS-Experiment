@@ -29,8 +29,17 @@ int atoi(const char* nptr) {
   return x;
 }
 
+//heap is decalared in <am.h>
+static size_t offset;  
 void *malloc(size_t size) {
-  return NULL;
+  char *hbrk, *p; 
+  p = (char*)heap.start + offset; 
+  size = (size + (8 - 1)) & ~(8 - 1); //8 bytes align
+  offset += size;
+  hbrk = (char*)heap.start + offset; 
+  assert((uintptr_t)heap.start <= (uintptr_t)hbrk && (uintptr_t)hbrk <= (uintptr_t)heap.end);
+  //omit the initialization of the memory allocated. 
+  return p;
 }
 
 void free(void *ptr) {

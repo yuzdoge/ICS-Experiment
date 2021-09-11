@@ -22,7 +22,7 @@ void halt(int code) {
 }
 
 void _trm_init() {
-if ((uintptr_t)&_pmem_start == 0x80000000) { putch('y'); putch('\n'); }
+//if ((uintptr_t)&_pmem_start == 0x80000000) { putch('y'); putch('\n'); } //the output is y with the ARCH=riscv32-nemu
   int ret = main(mainargs);
   halt(ret);
 }
