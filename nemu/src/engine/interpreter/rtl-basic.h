@@ -32,7 +32,7 @@ def_rtl_compute_reg_imm(shr)
 def_rtl_compute_reg_imm(sar)
 
 
-static inline def_rtl(setrelop, uint32_t relop, rtlreg_t *dest,
+ def_rtl(setrelop, uint32_t relop, rtlreg_t *dest,
     const rtlreg_t *src1, const rtlreg_t *src2) {
   *dest = interpret_relop(relop, *src1, *src2);
 }
