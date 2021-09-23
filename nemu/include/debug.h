@@ -1,6 +1,8 @@
 #ifndef __DEBUG_H__
 #define __DEBUG_H__
 
+volatile static int dummy;
+
 #include <stdio.h>
 #include <assert.h>
 #include <monitor/log.h>
