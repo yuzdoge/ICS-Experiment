@@ -6,12 +6,14 @@
 static uint32_t rect;
 void __am_gpu_init() {
   rect = inl(VGACTL_ADDR);
+  /*
   int i;
   int w = rect >> 16; 
   int h = rect & 0x0000ffff; 
   uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
   for (i = 0; i < w * h; i++) fb[i] = i;
   outl(SYNC_ADDR, 1);
+  */
 }
 
 void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
