@@ -35,13 +35,14 @@ static inline void audio_play(void *userdata, uint8_t *stream, int len) {
 }
 
 static SDL_AudioSpec s = {.format = AUDIO_S16SYS, .userdata = NULL, .callback = audio_play};
+#define reg_off(reg_name) (reg_name * sizeof(uint32_t))
 
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
   assert(len == 4);
   switch(offset) {
-    case reg_freq: case reg_channels: case reg_samples: 
+    case reg_off(reg_freq): case reg_off(reg_channels): case reg_off(reg_samples): 
 	  if (!is_write) panic("don't support read"); break;
-	case reg_init:
+	case reg_off(reg_init):
 	  if (!is_write) panic("don't support read");
 	  else {
 	    if (audio_base[reg_init]) {
@@ -55,9 +56,9 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
 		audio_base[reg_init] = 0;
 	  }
 	  break;
-	case reg_sbuf_size: case reg_count:
+	case reg_off(reg_sbuf_size): case reg_off(reg_count):
 	  if (is_write) panic("don't support write"); 
-	  else if (offset == reg_count) {
+	  else if (offset == reg_off(reg_count)) {
 	    audio_base[reg_count] = count;
 	  }
 	  break;
