@@ -52,6 +52,7 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
 		  s.samples = audio_base[reg_samples];
 		  Assert(SDL_OpenAudio(&s, NULL) >= 0, "can't open audio");
           SDL_PauseAudio(0);
+		  printf("freq = %d, channels = %d, samples = %d\n", s.freq, s.channels, s.samples);
 		}
 		audio_base[reg_init] = 0;
 	  }
