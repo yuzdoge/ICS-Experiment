@@ -8,19 +8,49 @@
 #define AUDIO_INIT_ADDR      (AUDIO_ADDR + 0x10)
 #define AUDIO_COUNT_ADDR     (AUDIO_ADDR + 0x14)
 
+static int qtail;
+
 void __am_audio_init() {
+  qtail = 0;
 }
 
 void __am_audio_config(AM_AUDIO_CONFIG_T *cfg) {
-  cfg->present = false;
+  cfg->present = true;
+  cfg->bufsize = inl(AUDIO_SBUF_SIZE_ADDR);
 }
 
 void __am_audio_ctrl(AM_AUDIO_CTRL_T *ctrl) {
+  outl(AUDIO_FREQ_ADDR, ctrl->freq);
+  outl(AUDIO_CHANNELS_ADDR, ctrl->channels);
+  outl(AUDIO_SAMPLES_ADDR, ctrl->samples);
+  outl(AUDIO_INIT_ADDR, 1);
 }
 
 void __am_audio_status(AM_AUDIO_STATUS_T *stat) {
-  stat->count = 0;
+  stat->count = inl(AUDIO_COUNT_ADDR);
+}
+
+static void audio_write(void *buf, int len) {
+  int sbuf_size = inl(AUDIO_SBUF_SIZE_ADDR);
+  int nwrite = 0;
+  while (nwrite < len) {
+    int count = inl(AUDIO_COUNT_ADDR);
+    int rest_size = sbuf_size - count;
+    int n = len - nwrite  < rest_size ? len - nwrite : rest_size; //another method is that we can wait untill it has enough space 
+    /* 
+    int q = n / sizeof(uint32_t);
+    int r = n - q * sizeof(uint32_t); //we can write 4 bytes once
+	*/
+    for (int i = 0; i < n; i++) { 
+	  outb(AUDIO_SBUF_ADDR + qtail, *(uint8_t *)buf); //queue_head ptr is maintained by nemu
+	  qtail = (qtail + 1) % sbuf_size;
+	  (uint8_t *)buf++;
+	}
+    nwrite += n;
+  }
 }
 
 void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
+  int len = ctl->buf.end - ctl->buf.start;
+  audio_write(ctl->buf.start, len);
 }
