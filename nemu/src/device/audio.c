@@ -28,8 +28,11 @@ static int qhead = 0;
 
 static inline void audio_play(void *userdata, uint8_t *stream, int len) {
   int nread = count < len ? count : len; 
-  memcpy(stream, &audio_base[qhead], nread);
-  qhead = (qhead + nread) % STREAM_BUF_MAX_SIZE;
+  for (int i = 0; i < nread; i++) {
+    stream[i] = sbuf[qhead];
+    qhead = (qhead + 1) % STREAM_BUF_MAX_SIZE;
+  }
+
   count -= nread;
   if (len > nread) memset(stream + nread, 0, len - nread); //if audio data is not enough, fill with silence data.
 }
@@ -52,7 +55,6 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
 		  s.samples = audio_base[reg_samples];
 		  Assert(SDL_OpenAudio(&s, NULL) >= 0, "can't open audio");
           SDL_PauseAudio(0);
-		  printf("freq = %d, channels = %d, samples = %d\n", s.freq, s.channels, s.samples);
 		}
 		audio_base[reg_init] = 0;
 	  }
